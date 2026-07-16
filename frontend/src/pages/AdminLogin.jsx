@@ -1,28 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lightbulb, LogIn, Lock, User } from 'lucide-react';
+import { Lightbulb, LogIn, Lock, User, Loader2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { ADMIN_CREDS } from '../mock';
+import { authApi } from '../api';
 import { useToast } from '../hooks/use-toast';
 
 export default function AdminLogin() {
   const nav = useNavigate();
   const { toast } = useToast();
-  const [creds, setCreds] = useState({ username: '', password: '' });
+  const [creds, setCreds] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem('srl-admin-auth') === '1') nav('/admin/dashboard', { replace: true });
+    if (localStorage.getItem('srl-token')) nav('/admin/dashboard', { replace: true });
   }, [nav]);
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    if (creds.username === ADMIN_CREDS.username && creds.password === ADMIN_CREDS.password) {
-      localStorage.setItem('srl-admin-auth', '1');
+    setLoading(true);
+    try {
+      const { token } = await authApi.login(creds.email, creds.password);
+      localStorage.setItem('srl-token', token);
+      localStorage.setItem('srl-admin-email', creds.email);
       toast({ title: 'Welcome back, Admin!' });
       nav('/admin/dashboard');
-    } else {
-      toast({ title: 'Invalid credentials', description: 'Please try again.' });
+    } catch (err) {
+      toast({
+        title: 'Login failed',
+        description: err?.response?.data?.detail || 'Invalid email or password.',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,10 +53,11 @@ export default function AdminLogin() {
         <div className="relative mt-2 mb-4">
           <User className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
           <Input
-            value={creds.username}
-            onChange={(e) => setCreds({ ...creds, username: e.target.value })}
+            value={creds.email}
+            onChange={(e) => setCreds({ ...creds, email: e.target.value })}
             className="pl-10 h-11 bg-background/60"
             placeholder="admin@example.com"
+            autoComplete="email"
           />
         </div>
 
@@ -60,16 +70,15 @@ export default function AdminLogin() {
             onChange={(e) => setCreds({ ...creds, password: e.target.value })}
             className="pl-10 h-11 bg-background/60"
             placeholder="••••••••"
+            autoComplete="current-password"
           />
         </div>
 
-        <Button type="submit" className="w-full h-11 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-medium">
-          <LogIn className="w-4 h-4 mr-2" /> Sign In
+        <Button type="submit" disabled={loading} className="w-full h-11 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-medium">
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><LogIn className="w-4 h-4 mr-2" /> Sign In</>}
         </Button>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Authorized access only.
-        </p>
+        <p className="mt-6 text-center text-xs text-muted-foreground">Authorized access only.</p>
       </form>
     </div>
   );

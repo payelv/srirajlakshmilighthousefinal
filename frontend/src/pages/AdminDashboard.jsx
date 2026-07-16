@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Lightbulb, LogOut, Home, Save, Trash2, Plus, RefreshCcw,
-  Package, MapPin, Info, FileText, LayoutGrid, Images, HelpCircle,
+  Lightbulb, LogOut, Home, Save, Trash2, Plus, Loader2,
+  Package, MapPin, Info, FileText, LayoutGrid, Images, HelpCircle, Inbox,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -15,30 +15,49 @@ import {
 } from '../components/ui/select';
 import { useContent } from '../context/ContentContext';
 import { useToast } from '../hooks/use-toast';
+import { enquiryApi } from '../api';
 
 export default function AdminDashboard() {
   const nav = useNavigate();
-  const { content, updateContent, resetAll } = useContent();
+  const { content, updateContent } = useContent();
   const { toast } = useToast();
+  const [saving, setSaving] = useState(false);
 
   const logout = () => {
-    localStorage.removeItem('srl-admin-auth');
+    localStorage.removeItem('srl-token');
+    localStorage.removeItem('srl-admin-email');
     nav('/admin');
   };
 
-  const savedToast = () => toast({ title: 'Changes saved', description: 'Updated on the live site.' });
+  const doSave = async (patch) => {
+    setSaving(true);
+    const res = await updateContent(patch);
+    setSaving(false);
+    if (res.ok) toast({ title: 'Changes saved', description: 'Live on the website now.' });
+    else toast({ title: 'Save failed', description: res.error || 'Try again.' });
+    return res;
+  };
+
+  // Re-sync local editors when content refreshes from backend
+  useEffect(() => { setBiz(content.business); }, [content.business]);
+  useEffect(() => { setHero(content.hero); }, [content.hero]);
+  useEffect(() => { setAbout(content.about); }, [content.about]);
+  useEffect(() => { setProducts(content.products); }, [content.products]);
+  useEffect(() => { setCats(content.categories); }, [content.categories]);
+  useEffect(() => { setGallery(content.gallery); }, [content.gallery]);
+  useEffect(() => { setFaqs(content.faqs); }, [content.faqs]);
 
   // ---- Business ----
   const [biz, setBiz] = useState(content.business);
-  const saveBiz = () => { updateContent({ business: biz }); savedToast(); };
+  const saveBiz = () => doSave({ business: biz });
 
   // ---- Hero ----
   const [hero, setHero] = useState(content.hero);
-  const saveHero = () => { updateContent({ hero }); savedToast(); };
+  const saveHero = () => doSave({ hero });
 
   // ---- About ----
   const [about, setAbout] = useState(content.about);
-  const saveAbout = () => { updateContent({ about }); savedToast(); };
+  const saveAbout = () => doSave({ about });
 
   // ---- Products ----
   const [products, setProducts] = useState(content.products);
@@ -58,7 +77,7 @@ export default function AdminDashboard() {
       },
       ...prev,
     ]);
-  const saveProducts = () => { updateContent({ products }); savedToast(); };
+  const saveProducts = () => doSave({ products });
 
   // ---- Categories ----
   const [cats, setCats] = useState(content.categories);
@@ -66,26 +85,44 @@ export default function AdminDashboard() {
   const removeCat = (id) => setCats((prev) => prev.filter((c) => c.id !== id));
   const addCat = () =>
     setCats((prev) => [...prev, { id: `cat${Date.now()}`, name: 'New Category', icon: 'Lightbulb', image: '' }]);
-  const saveCats = () => { updateContent({ categories: cats }); savedToast(); };
+  const saveCats = () => doSave({ categories: cats });
 
   // ---- Gallery ----
   const [gallery, setGallery] = useState(content.gallery);
   const updateGal = (i, patch) => setGallery((prev) => prev.map((g, idx) => (idx === i ? { ...g, ...patch } : g)));
   const removeGal = (i) => setGallery((prev) => prev.filter((_, idx) => idx !== i));
   const addGal = () => setGallery((prev) => [...prev, { title: 'New Space', image: '' }]);
-  const saveGallery = () => { updateContent({ gallery }); savedToast(); };
+  const saveGallery = () => doSave({ gallery });
 
   // ---- FAQs ----
   const [faqs, setFaqs] = useState(content.faqs);
   const updateFaq = (i, patch) => setFaqs((prev) => prev.map((f, idx) => (idx === i ? { ...f, ...patch } : f)));
   const removeFaq = (i) => setFaqs((prev) => prev.filter((_, idx) => idx !== i));
   const addFaq = () => setFaqs((prev) => [...prev, { q: 'New question', a: 'Answer here.' }]);
-  const saveFaqs = () => { updateContent({ faqs }); savedToast(); };
+  const saveFaqs = () => doSave({ faqs });
 
-  const onReset = () => {
-    if (window.confirm('Reset all content to defaults? This cannot be undone.')) {
-      resetAll();
-      window.location.reload();
+  // ---- Enquiries ----
+  const [enquiries, setEnquiries] = useState([]);
+  const [enqLoading, setEnqLoading] = useState(false);
+  const loadEnquiries = async () => {
+    setEnqLoading(true);
+    try {
+      const rows = await enquiryApi.list();
+      setEnquiries(rows);
+    } catch (e) {
+      toast({ title: 'Failed to load enquiries', description: e?.message });
+    } finally {
+      setEnqLoading(false);
+    }
+  };
+  useEffect(() => { loadEnquiries(); }, []); // load once
+  const removeEnquiry = async (id) => {
+    if (!window.confirm('Delete this enquiry?')) return;
+    try {
+      await enquiryApi.remove(id);
+      setEnquiries((prev) => prev.filter((e) => e.id !== id));
+    } catch (e) {
+      toast({ title: 'Delete failed', description: e?.message });
     }
   };
 
@@ -107,9 +144,11 @@ export default function AdminDashboard() {
             <Link to="/" className="hidden sm:inline-flex items-center gap-2 h-9 px-4 rounded-full border border-border hover:border-amber-500/60 text-sm">
               <Home className="w-4 h-4" /> View Site
             </Link>
-            <Button variant="outline" onClick={onReset} className="h-9 rounded-full text-sm">
-              <RefreshCcw className="w-4 h-4 mr-2" /> Reset
-            </Button>
+            {saving && (
+              <span className="hidden sm:inline-flex items-center gap-2 text-xs text-amber-400">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" /> Saving…
+              </span>
+            )}
             <Button onClick={logout} className="h-9 rounded-full bg-amber-500 hover:bg-amber-400 text-black text-sm">
               <LogOut className="w-4 h-4 mr-2" /> Logout
             </Button>
@@ -127,6 +166,7 @@ export default function AdminDashboard() {
             <TabTrig value="products" icon={<Package className="w-4 h-4" />} label="Products" />
             <TabTrig value="gallery" icon={<Images className="w-4 h-4" />} label="Gallery" />
             <TabTrig value="faqs" icon={<HelpCircle className="w-4 h-4" />} label="FAQs" />
+            <TabTrig value="enquiries" icon={<Inbox className="w-4 h-4" />} label="Enquiries" />
           </TabsList>
 
           {/* BUSINESS */}
@@ -292,6 +332,51 @@ export default function AdminDashboard() {
                 ))}
               </div>
             </SectionCard>
+          </TabsContent>
+
+          {/* Enquiries */}
+          <TabsContent value="enquiries" className="mt-8">
+            <div className="rounded-2xl border border-border bg-card/40 backdrop-blur p-6 lg:p-8">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="font-serif text-2xl">Customer Enquiries</h2>
+                <Button variant="outline" onClick={loadEnquiries} className="h-9 rounded-full text-sm">
+                  {enqLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                  Refresh
+                </Button>
+              </div>
+              {enquiries.length === 0 ? (
+                <div className="text-center text-muted-foreground py-12">
+                  {enqLoading ? 'Loading…' : 'No enquiries yet. Once customers submit the contact form they will appear here.'}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {enquiries.map((e) => (
+                    <div key={e.id} className="rounded-xl border border-border p-5">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <div className="font-serif text-lg">{e.name}</div>
+                          <div className="mt-1 text-xs text-muted-foreground flex flex-wrap gap-3">
+                            {e.email && <span>{e.email}</span>}
+                            {e.phone && <span>{e.phone}</span>}
+                            <span>{new Date(e.created_at).toLocaleString()}</span>
+                          </div>
+                        </div>
+                        <button onClick={() => removeEnquiry(e.id)} className="w-9 h-9 rounded-full border border-border hover:border-red-500/60 flex items-center justify-center text-muted-foreground hover:text-red-400">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <p className="mt-3 text-sm text-foreground/90 whitespace-pre-line">{e.message}</p>
+                      {e.phone && (
+                        <div className="mt-3 flex gap-2">
+                          <a href={`tel:${e.phone}`} className="text-xs text-amber-400 hover:underline">Call →</a>
+                          <a href={`https://wa.me/${e.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="text-xs text-emerald-400 hover:underline">WhatsApp →</a>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </TabsContent>
         </Tabs>
       </main>

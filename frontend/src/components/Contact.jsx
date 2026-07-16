@@ -5,6 +5,7 @@ import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { useToast } from '../hooks/use-toast';
 import { useContent } from '../context/ContentContext';
+import { enquiryApi } from '../api';
 
 export default function Contact() {
   const { content } = useContent();
@@ -16,23 +17,26 @@ export default function Contact() {
 
   const handle = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.message) {
       toast({ title: 'Please fill your name and message.' });
       return;
     }
     setLoading(true);
-    // Mock submission — also open WhatsApp with prefilled text as a real fallback
-    setTimeout(() => {
-      const text = encodeURIComponent(
-        `Enquiry from ${form.name}%0APhone: ${form.phone}%0AEmail: ${form.email}%0A%0A${form.message}`
-      );
-      window.open(`https://wa.me/${business.whatsapp}?text=${text}`, '_blank');
-      toast({ title: 'Enquiry ready — sending via WhatsApp.' });
-      setForm({ name: '', email: '', phone: '', message: '' });
-      setLoading(false);
-    }, 700);
+    try {
+      await enquiryApi.create(form);
+    } catch (err) {
+      // Non-blocking: still open WhatsApp fallback below
+      console.warn('enquiry save failed', err?.message);
+    }
+    const text = encodeURIComponent(
+      `Enquiry from ${form.name}%0APhone: ${form.phone}%0AEmail: ${form.email}%0A%0A${form.message}`
+    );
+    window.open(`https://wa.me/${business.whatsapp}?text=${text}`, '_blank');
+    toast({ title: 'Enquiry sent!', description: 'We have received your message and opened WhatsApp for a quick reply.' });
+    setForm({ name: '', email: '', phone: '', message: '' });
+    setLoading(false);
   };
 
   const mapsSrc = `https://www.google.com/maps?q=${encodeURIComponent(business.mapsQuery)}&output=embed`;

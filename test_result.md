@@ -101,3 +101,166 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: |
+  Clone of https://luminous-zenith-showcase.lovable.app for "Sri Rajlaxmi Light House" (Kochi).
+  Full backend added so admin edits persist to MongoDB globally. Admin email
+  payelraj26@gmail.com / rajlaxmi@2025. WhatsApp & Google Maps integrated.
+
+backend:
+  - task: "GET /api/content seeds and returns full site content"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "First call seeds MongoDB `site_content` collection with DEFAULT_CONTENT. Returns full document without _id."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - GET /api/content returns 200 with complete structure. Verified all required keys: business (phone, whatsapp, email, address, mapsQuery, hours, hoursFull), hero (image, titleLine1, titleAccent, subtitle), about (body list, stats list of 4, chips list), categories (12 items with id/name/icon), products (8 items with all required fields), whyUs (8 items with icon/title/text), gallery (9 items with title/image), faqs (6 items with q/a). Content seeding and retrieval working perfectly."
+
+  - task: "POST /api/admin/login issues JWT for correct creds"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Compares against ADMIN_EMAIL/ADMIN_PASSWORD from .env. Returns 401 on invalid, 200 with JWT (HS256, 7-day TTL) on success. Verify happy path + wrong password + wrong email."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - All 3 scenarios verified: (1) Wrong password (payelraj26@gmail.com/wrong) returns 401 ✓ (2) Wrong email (hacker@example.com/rajlaxmi@2025) returns 401 ✓ (3) Correct credentials (payelraj26@gmail.com/rajlaxmi@2025) returns 200 with valid JWT token (187 chars) and expiresIn field ✓. Authentication working correctly."
+
+  - task: "PUT /api/content requires admin JWT and merges updates"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Rejects missing/invalid tokens (401). With admin token, patches only allowed keys (business/hero/about/categories/products/whyUs/gallery/faqs) and returns updated content. Verify persistence via subsequent GET."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - All scenarios verified: (1) No token returns 401 ✓ (2) With admin token, updated business.phone to +919999999999 and business.whatsapp to 919999999999, response reflected changes immediately ✓ (3) Subsequent GET /api/content confirmed persistence ✓ (4) Successfully restored original values (phone: +918870524744, whatsapp: 918870524744) ✓. Content update and persistence working perfectly."
+
+  - task: "GET /api/admin/verify validates token"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - All 3 scenarios verified: (1) No Authorization header returns 401 ✓ (2) Invalid token (Bearer invalid_random_token_12345) returns 401 ✓ (3) Valid admin token returns 200 with {ok: true, email: payelraj26@gmail.com} ✓. Token verification working correctly."
+
+  - task: "POST /api/enquiries stores contact form submissions"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Public endpoint. Returns { id }. Persists to `enquiries` collection with UUID id and ISO timestamp."
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - POST /api/enquiries with body {name: 'Test User', email: 'test@example.com', phone: '+911234567890', message: 'I need a chandelier for my living room.'} returns 200 with UUID id (f535cb97-f18b-4d95-806a-2b1ec7fd8521). Public endpoint working correctly, no auth required."
+
+  - task: "GET /api/enquiries lists enquiries (admin only)"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - Both scenarios verified: (1) No token returns 401 ✓ (2) With admin token returns 200 with array containing created enquiry ✓. Verified all fields present (id, name, email, phone, message, created_at) and newest-first ordering ✓. Admin-only access working correctly."
+
+  - task: "DELETE /api/enquiries/{id} removes enquiry (admin only)"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ PASSED - Both scenarios verified: (1) No token returns 401 ✓ (2) With admin token for test enquiry id returns 200 {ok: true} ✓ (3) Follow-up GET /api/enquiries confirmed enquiry no longer in list ✓. Deletion and verification working correctly."
+
+frontend:
+  - task: "Landing page consumes /api/content"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/context/ContentContext.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+
+  - task: "Admin login uses JWT flow"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AdminLogin.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus: []
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: |
+      Backend fully implemented for Sri Rajlaxmi Light House.
+      Please verify the following end-to-end via API tests:
+      1. GET /api/content on a fresh DB returns full seeded content with keys: business, hero, about, categories (12 items), products (>=6), whyUs (8), gallery (9), faqs (6).
+      2. POST /api/admin/login with correct creds (email: payelraj26@gmail.com, password: rajlaxmi@2025) returns 200 + JWT token. Wrong password returns 401.
+      3. PUT /api/content without token -> 401. With admin token and body { "business": { "phone": "+919999999999", ...same other fields } } persists and next GET reflects the change.
+      4. POST /api/enquiries with valid body returns 200 + id. GET /api/enquiries without token -> 401; with token -> list contains the created enquiry.
+      5. DELETE /api/enquiries/{id} with admin token removes it.
+      Use REACT_APP_BACKEND_URL from /app/frontend/.env as base + '/api'.
+  - agent: "testing"
+    message: |
+      ✅ ALL BACKEND TESTS PASSED (16/16 tests, 100% success rate)
+      
+      Comprehensive testing completed for all 7 backend tasks covering 8 test scenarios:
+      
+      1. ✅ GET /api/ - Root endpoint returns 200 with message
+      2. ✅ GET /api/content - Full content structure verified with all required keys
+      3. ✅ POST /api/admin/login - All auth scenarios working (wrong password 401, wrong email 401, correct creds 200 with JWT)
+      4. ✅ GET /api/admin/verify - Token validation working (no token 401, bad token 401, valid token 200)
+      5. ✅ PUT /api/content - Content updates working (no token 401, with token updates & persists, restoration successful)
+      6. ✅ POST /api/enquiries - Public enquiry creation working (returns UUID)
+      7. ✅ GET /api/enquiries - Admin-only listing working (no token 401, with token returns correct data)
+      8. ✅ DELETE /api/enquiries/{id} - Admin-only deletion working (no token 401, with token deletes & verified)
+      
+      All endpoints tested against production URL: https://rajlakshmi-showcase.preview.emergentagent.com/api
+      Authentication flow verified with credentials: payelraj26@gmail.com / rajlaxmi@2025
+      Data persistence confirmed via MongoDB operations.
+      
+      Backend is production-ready with no critical issues found.
