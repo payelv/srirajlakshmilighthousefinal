@@ -19,38 +19,18 @@ export default function Categories() {
         </p>
       </div>
 
-      {/* Marquee 1 — left */}
+      {/* Single continuous marquee */}
       <div className="relative overflow-hidden">
         <div className="flex gap-4 w-max scroll-marquee">
           {[...cats, ...cats].map((c, i) => {
             const Icon = Icons[c.icon] || Icons.Lightbulb;
             return (
               <div
-                key={`row1-${c.id}-${i}`}
+                key={`row-${c.id}-${i}`}
                 className="flex items-center gap-3 px-7 py-4 rounded-full border border-border bg-card/60 backdrop-blur whitespace-nowrap"
               >
                 <Icon className="w-4 h-4 text-amber-400" />
                 <span className="font-serif text-lg">{c.name}</span>
-              </div>
-            );
-          })}
-        </div>
-        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-background to-transparent pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background to-transparent pointer-events-none" />
-      </div>
-
-      {/* Marquee 2 — reversed for depth */}
-      <div className="relative overflow-hidden mt-5">
-        <div className="flex gap-4 w-max scroll-marquee-reverse">
-          {[...cats].reverse().concat([...cats].reverse()).map((c, i) => {
-            const Icon = Icons[c.icon] || Icons.Lightbulb;
-            return (
-              <div
-                key={`row2-${c.id}-${i}`}
-                className="flex items-center gap-3 px-7 py-4 rounded-full border border-amber-500/25 bg-amber-500/5 backdrop-blur whitespace-nowrap"
-              >
-                <Icon className="w-4 h-4 text-amber-300" />
-                <span className="font-serif text-lg text-amber-100">{c.name}</span>
               </div>
             );
           })}
