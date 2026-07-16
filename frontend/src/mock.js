@@ -184,4 +184,4 @@ export function resetContent() {
   localStorage.removeItem(STORAGE_KEY);
 }
 
-export const ADMIN_CREDS = { username: 'admin', password: 'rajlaxmi@2025' };
+export const ADMIN_CREDS = { username: 'payelraj26@gmail.com', password: 'rajlaxmi@2025' };

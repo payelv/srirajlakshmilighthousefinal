@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Lightbulb, Menu, Sun, Moon, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useContent } from '../context/ContentContext';
@@ -78,9 +77,6 @@ export default function Navbar() {
           >
             Visit Showroom
           </Button>
-          <Link to="/admin" className="hidden md:inline-block text-xs text-muted-foreground hover:text-amber-400">
-            Admin
-          </Link>
           <button
             onClick={() => setOpen((o) => !o)}
             className="lg:hidden w-10 h-10 rounded-full border border-border flex items-center justify-center"
@@ -103,9 +99,6 @@ export default function Navbar() {
                 {l.label}
               </button>
             ))}
-            <Link to="/admin" onClick={() => setOpen(false)} className="text-amber-400 text-sm mt-2">
-              Admin Dashboard
-            </Link>
           </div>
         </div>
       )}

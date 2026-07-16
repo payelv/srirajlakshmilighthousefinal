@@ -138,6 +138,14 @@ code {
     to { transform: translateX(-50%); }
   }
 
+  .scroll-marquee-reverse {
+    animation: marquee-reverse 50s linear infinite;
+  }
+  @keyframes marquee-reverse {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0); }
+  }
+
   .glow-ring {
     box-shadow: 0 0 0 1px rgba(245, 166, 35, 0.25), 0 12px 40px -12px rgba(245, 166, 35, 0.35);
   }

@@ -40,14 +40,14 @@ export default function AdminLogin() {
           </div>
         </div>
 
-        <label className="text-xs uppercase tracking-widest text-muted-foreground">Username</label>
+        <label className="text-xs uppercase tracking-widest text-muted-foreground">Email</label>
         <div className="relative mt-2 mb-4">
           <User className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
           <Input
             value={creds.username}
             onChange={(e) => setCreds({ ...creds, username: e.target.value })}
             className="pl-10 h-11 bg-background/60"
-            placeholder="admin"
+            placeholder="admin@example.com"
           />
         </div>
 
@@ -68,7 +68,7 @@ export default function AdminLogin() {
         </Button>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          Demo credentials: <span className="text-amber-400">admin / rajlaxmi@2025</span>
+          Authorized access only.
         </p>
       </form>
     </div>
