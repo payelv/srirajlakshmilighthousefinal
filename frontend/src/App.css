@@ -1,0 +1,15 @@
+.App {
+  min-height: 100vh;
+  background-color: hsl(var(--background));
+}
+
+/* smooth anchor scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* selection */
+::selection {
+  background: rgba(245, 166, 35, 0.35);
+  color: #fff;
+}
