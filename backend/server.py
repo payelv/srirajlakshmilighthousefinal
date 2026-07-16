@@ -1,5 +1,6 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header, UploadFile, File, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -31,6 +32,11 @@ JWT_ALG = "HS256"
 JWT_TTL_DAYS = 7
 
 SITE_DOC_ID = "singleton"
+
+UPLOAD_DIR = ROOT_DIR / "uploads"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+ALLOWED_IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".svg", ".avif"}
 
 app = FastAPI(title="Sri Rajlaxmi Light House API")
 api = APIRouter(prefix="/api")
@@ -168,8 +174,73 @@ async def delete_enquiry(eid: str, _admin=Depends(require_admin)):
     return {"ok": True}
 
 
+@api.post("/upload")
+async def upload_file(
+    request: Request,
+    file: UploadFile = File(...),
+    _admin=Depends(require_admin),
+):
+    """Upload an image (or any binary asset) from the admin panel.
+
+    Streams the file to disk in 1 MB chunks so we can handle large files without
+    loading them entirely into memory. Returns an absolute URL that can be stored
+    directly in the site content (e.g. product image).
+    """
+    original = file.filename or "upload.bin"
+    ext = os.path.splitext(original)[1].lower()
+    if ext not in ALLOWED_IMAGE_EXTS and file.content_type and not file.content_type.startswith("image/"):
+        # allow common image extensions; also permit anything the browser flagged as image/*
+        raise HTTPException(status_code=400, detail=f"Unsupported file type: {ext or file.content_type}")
+    if not ext:
+        # fall back based on content-type
+        ct = (file.content_type or "").lower()
+        ext_map = {
+            "image/jpeg": ".jpg",
+            "image/png": ".png",
+            "image/webp": ".webp",
+            "image/gif": ".gif",
+            "image/svg+xml": ".svg",
+            "image/avif": ".avif",
+            "image/bmp": ".bmp",
+        }
+        ext = ext_map.get(ct, ".bin")
+
+    fname = f"{uuid.uuid4().hex}{ext}"
+    fpath = UPLOAD_DIR / fname
+
+    total = 0
+    try:
+        with fpath.open("wb") as out:
+            while True:
+                chunk = await file.read(1024 * 1024)  # 1 MB chunks
+                if not chunk:
+                    break
+                out.write(chunk)
+                total += len(chunk)
+    except Exception as e:
+        # cleanup on failure
+        try:
+            fpath.unlink(missing_ok=True)
+        except Exception:
+            pass
+        raise HTTPException(status_code=500, detail=f"Upload failed: {e}") from e
+
+    base = str(request.base_url).rstrip("/")
+    return {
+        "url": f"{base}/api/uploads/{fname}",
+        "path": f"/api/uploads/{fname}",
+        "filename": fname,
+        "size": total,
+        "contentType": file.content_type,
+    }
+
+
 # Mount router
 app.include_router(api)
+
+# Serve uploaded files (must be mounted after include_router to avoid path conflicts
+# with the API prefix — StaticFiles handles GET only, so no clash with /api/upload POST)
+app.mount("/api/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 
 app.add_middleware(
     CORSMiddleware,

@@ -16,6 +16,7 @@ import {
 import { useContent } from '../context/ContentContext';
 import { useToast } from '../hooks/use-toast';
 import { enquiryApi } from '../api';
+import ImageUploadField from '../components/ImageUploadField';
 
 export default function AdminDashboard() {
   const nav = useNavigate();
@@ -193,7 +194,16 @@ export default function AdminDashboard() {
             <SectionCard title="Hero Section" onSave={saveHero}>
               <div className="grid md:grid-cols-2 gap-4">
                 <Field label="Eyebrow" value={hero.eyebrow} onChange={(v) => setHero({ ...hero, eyebrow: v })} />
-                <Field label="Image URL" value={hero.image} onChange={(v) => setHero({ ...hero, image: v })} />
+                <div>
+                  <label className="text-xs uppercase tracking-widest text-muted-foreground">Hero Image</label>
+                  <div className="mt-2">
+                    <ImageUploadField
+                      value={hero.image}
+                      onChange={(v) => setHero({ ...hero, image: v })}
+                      placeholder="Hero image URL or upload"
+                    />
+                  </div>
+                </div>
                 <Field label="Title Line 1" value={hero.titleLine1} onChange={(v) => setHero({ ...hero, titleLine1: v })} className="md:col-span-2" />
                 <Field label="Title Accent" value={hero.titleAccent} onChange={(v) => setHero({ ...hero, titleAccent: v })} className="md:col-span-2" />
                 <FieldArea label="Subtitle" value={hero.subtitle} onChange={(v) => setHero({ ...hero, subtitle: v })} className="md:col-span-2" />
@@ -248,7 +258,7 @@ export default function AdminDashboard() {
                     <img src={c.image} alt="" className="w-20 h-20 rounded-lg object-cover bg-muted flex-shrink-0" onError={(e) => (e.currentTarget.style.opacity = 0.25)} />
                     <div className="flex-1 space-y-2">
                       <Input value={c.name} onChange={(e) => updateCat(c.id, { name: e.target.value })} className="bg-background/60 h-9" placeholder="Name" />
-                      <Input value={c.image} onChange={(e) => updateCat(c.id, { image: e.target.value })} className="bg-background/60 h-9" placeholder="Image URL" />
+                      <ImageUploadField value={c.image} onChange={(v) => updateCat(c.id, { image: v })} placeholder="Category image URL or upload" />
                       <div className="flex gap-2 items-center">
                         <Input value={c.icon} onChange={(e) => updateCat(c.id, { icon: e.target.value })} className="bg-background/60 h-9 flex-1" placeholder="lucide icon name (e.g. Lightbulb)" />
                         <button onClick={() => removeCat(c.id)} className="w-9 h-9 rounded-full border border-border hover:border-red-500/60 flex items-center justify-center text-muted-foreground hover:text-red-400">
@@ -272,7 +282,13 @@ export default function AdminDashboard() {
                     <div className="grid md:grid-cols-2 gap-3">
                       <Input value={p.name} onChange={(e) => updateProduct(p.id, { name: e.target.value })} className="bg-background/60 h-9" placeholder="Name" />
                       <Input type="number" value={p.price} onChange={(e) => updateProduct(p.id, { price: Number(e.target.value) })} className="bg-background/60 h-9" placeholder="Price (INR)" />
-                      <Input value={p.image} onChange={(e) => updateProduct(p.id, { image: e.target.value })} className="bg-background/60 h-9 md:col-span-2" placeholder="Image URL" />
+                      <div className="md:col-span-2">
+                        <ImageUploadField
+                          value={p.image}
+                          onChange={(v) => updateProduct(p.id, { image: v })}
+                          placeholder="Product image URL or upload from device"
+                        />
+                      </div>
                       <Select value={p.category} onValueChange={(v) => updateProduct(p.id, { category: v })}>
                         <SelectTrigger className="bg-background/60 h-9"><SelectValue placeholder="Category" /></SelectTrigger>
                         <SelectContent>
@@ -306,7 +322,7 @@ export default function AdminDashboard() {
                     <img src={g.image} alt="" className="w-24 h-24 rounded-lg object-cover bg-muted flex-shrink-0" onError={(e) => (e.currentTarget.style.opacity = 0.25)} />
                     <div className="flex-1 space-y-2">
                       <Input value={g.title} onChange={(e) => updateGal(i, { title: e.target.value })} className="bg-background/60 h-9" placeholder="Title" />
-                      <Input value={g.image} onChange={(e) => updateGal(i, { image: e.target.value })} className="bg-background/60 h-9" placeholder="Image URL" />
+                      <ImageUploadField value={g.image} onChange={(v) => updateGal(i, { image: v })} placeholder="Gallery image URL or upload" />
                       <button onClick={() => removeGal(i)} className="text-xs text-muted-foreground hover:text-red-400 inline-flex items-center gap-1">
                         <Trash2 className="w-3 h-3" /> Remove
                       </button>

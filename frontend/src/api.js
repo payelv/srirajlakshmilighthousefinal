@@ -29,4 +29,20 @@ export const enquiryApi = {
   remove: (id) => http.delete(`/enquiries/${id}`).then((r) => r.data),
 };
 
+export const uploadApi = {
+  // Uploads a file (image) and returns { url, path, filename, size, contentType }
+  upload: (file, onProgress) => {
+    const form = new FormData();
+    form.append('file', file);
+    return http
+      .post('/upload', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (e) => {
+          if (onProgress && e.total) onProgress(Math.round((e.loaded / e.total) * 100));
+        },
+      })
+      .then((r) => r.data);
+  },
+};
+
 export default http;
