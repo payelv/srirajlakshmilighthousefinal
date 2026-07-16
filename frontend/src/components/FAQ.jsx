@@ -23,7 +23,7 @@ export default function FAQ() {
         <Accordion type="single" collapsible className="space-y-4">
           {content.faqs.map((f, i) => (
             <AccordionItem
-              key={i}
+              key={f.q || `faq-${i}`}
               value={`item-${i}`}
               className="rounded-2xl border border-border bg-card/40 backdrop-blur px-6 data-[state=open]:border-amber-500/40"
             >

@@ -171,7 +171,8 @@ export function loadContent() {
     const parsed = JSON.parse(raw);
     // shallow merge to allow additions of new default fields
     return { ...DEFAULT_CONTENT, ...parsed };
-  } catch {
+  } catch (err) {
+    console.warn('[mock] Failed to read cached content:', err);
     return DEFAULT_CONTENT;
   }
 }
@@ -184,4 +185,5 @@ export function resetContent() {
   localStorage.removeItem(STORAGE_KEY);
 }
 
-export const ADMIN_CREDS = { username: 'payelraj26@gmail.com', password: 'rajlaxmi@2025' };
+// NOTE: Admin credentials are managed on the backend only (see backend/.env).
+// This module intentionally contains no auth secrets.

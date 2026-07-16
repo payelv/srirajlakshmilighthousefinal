@@ -1,25 +1,37 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import { DEFAULT_CONTENT } from '../mock';
 import { contentApi } from '../api';
 
 const ContentContext = createContext(null);
 const CACHE_KEY = 'srl-content-cache-v2';
+const THEME_KEY = 'srl-theme';
+
+function readCache() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (raw) return { ...DEFAULT_CONTENT, ...JSON.parse(raw) };
+  } catch (err) {
+    console.warn('[ContentContext] Failed to parse cached content:', err);
+  }
+  return DEFAULT_CONTENT;
+}
 
 export function ContentProvider({ children }) {
-  const [content, setContent] = useState(() => {
-    try {
-      const raw = localStorage.getItem(CACHE_KEY);
-      if (raw) return { ...DEFAULT_CONTENT, ...JSON.parse(raw) };
-    } catch {}
-    return DEFAULT_CONTENT;
-  });
+  const [content, setContent] = useState(readCache);
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState(() => localStorage.getItem('srl-theme') || 'dark');
+  const [theme, setTheme] = useState(() => localStorage.getItem(THEME_KEY) || 'dark');
 
   useEffect(() => {
     document.documentElement.classList.remove('light', 'dark');
     document.documentElement.classList.add(theme);
-    localStorage.setItem('srl-theme', theme);
+    localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
 
   const refresh = useCallback(async () => {
@@ -28,10 +40,13 @@ export function ContentProvider({ children }) {
       const data = await contentApi.get();
       const merged = { ...DEFAULT_CONTENT, ...data };
       setContent(merged);
-      localStorage.setItem(CACHE_KEY, JSON.stringify(merged));
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(merged));
+      } catch (cacheErr) {
+        console.warn('[ContentContext] Cache write failed:', cacheErr);
+      }
     } catch (e) {
-      // keep cached / default
-      console.warn('content fetch failed', e?.message);
+      console.warn('[ContentContext] content fetch failed:', e?.message);
     } finally {
       setLoading(false);
     }
@@ -41,32 +56,46 @@ export function ContentProvider({ children }) {
     refresh();
   }, [refresh]);
 
-  const updateContent = useCallback(
-    async (patch) => {
-      // optimistic local update
-      const nextLocal = typeof patch === 'function' ? patch(content) : { ...content, ...patch };
-      setContent(nextLocal);
-      localStorage.setItem(CACHE_KEY, JSON.stringify(nextLocal));
+  const updateContent = useCallback(async (patch) => {
+    // optimistic local update
+    let nextLocal;
+    setContent((prev) => {
+      nextLocal = typeof patch === 'function' ? patch(prev) : { ...prev, ...patch };
       try {
-        const saved = await contentApi.update(typeof patch === 'function' ? nextLocal : patch);
-        const merged = { ...DEFAULT_CONTENT, ...saved };
-        setContent(merged);
-        localStorage.setItem(CACHE_KEY, JSON.stringify(merged));
-        return { ok: true };
-      } catch (e) {
-        return { ok: false, error: e?.response?.data?.detail || e.message };
+        localStorage.setItem(CACHE_KEY, JSON.stringify(nextLocal));
+      } catch (cacheErr) {
+        console.warn('[ContentContext] Cache write failed:', cacheErr);
       }
-    },
-    [content]
+      return nextLocal;
+    });
+    try {
+      const body = typeof patch === 'function' ? nextLocal : patch;
+      const saved = await contentApi.update(body);
+      const merged = { ...DEFAULT_CONTENT, ...saved };
+      setContent(merged);
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(merged));
+      } catch (cacheErr) {
+        console.warn('[ContentContext] Cache write failed:', cacheErr);
+      }
+      return { ok: true };
+    } catch (e) {
+      console.error('[ContentContext] Save failed:', e);
+      return { ok: false, error: e?.response?.data?.detail || e.message };
+    }
+  }, []);
+
+  const toggleTheme = useCallback(
+    () => setTheme((t) => (t === 'dark' ? 'light' : 'dark')),
+    []
   );
 
-  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
-
-  return (
-    <ContentContext.Provider value={{ content, updateContent, refresh, loading, theme, toggleTheme }}>
-      {children}
-    </ContentContext.Provider>
+  const value = useMemo(
+    () => ({ content, updateContent, refresh, loading, theme, toggleTheme }),
+    [content, updateContent, refresh, loading, theme, toggleTheme]
   );
+
+  return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;
 }
 
 export function useContent() {

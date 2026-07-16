@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Lightbulb, LogOut, Home, Save, Trash2, Plus, Loader2,
@@ -104,7 +104,7 @@ export default function AdminDashboard() {
   // ---- Enquiries ----
   const [enquiries, setEnquiries] = useState([]);
   const [enqLoading, setEnqLoading] = useState(false);
-  const loadEnquiries = async () => {
+  const loadEnquiries = useCallback(async () => {
     setEnqLoading(true);
     try {
       const rows = await enquiryApi.list();
@@ -114,8 +114,8 @@ export default function AdminDashboard() {
     } finally {
       setEnqLoading(false);
     }
-  };
-  useEffect(() => { loadEnquiries(); }, []); // load once
+  }, [toast]);
+  useEffect(() => { loadEnquiries(); }, [loadEnquiries]);
   const removeEnquiry = async (id) => {
     if (!window.confirm('Delete this enquiry?')) return;
     try {
@@ -221,7 +221,7 @@ export default function AdminDashboard() {
                 <div className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Statistics</div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {about.stats.map((s, i) => (
-                    <div key={i} className="rounded-xl border border-border p-3">
+                    <div key={`stat-${s.label || i}`} className="rounded-xl border border-border p-3">
                       <Input type="number" value={s.value} onChange={(e) => {
                         const next = [...about.stats];
                         next[i] = { ...s, value: Number(e.target.value) };
@@ -302,7 +302,7 @@ export default function AdminDashboard() {
             <SectionCard title="Gallery" onSave={saveGallery} onAdd={addGal}>
               <div className="grid md:grid-cols-2 gap-4">
                 {gallery.map((g, i) => (
-                  <div key={i} className="rounded-xl border border-border p-4 flex gap-3">
+                  <div key={`${g.title || 'gallery'}-${i}`} className="rounded-xl border border-border p-4 flex gap-3">
                     <img src={g.image} alt="" className="w-24 h-24 rounded-lg object-cover bg-muted flex-shrink-0" onError={(e) => (e.currentTarget.style.opacity = 0.25)} />
                     <div className="flex-1 space-y-2">
                       <Input value={g.title} onChange={(e) => updateGal(i, { title: e.target.value })} className="bg-background/60 h-9" placeholder="Title" />
@@ -322,7 +322,7 @@ export default function AdminDashboard() {
             <SectionCard title="FAQs" onSave={saveFaqs} onAdd={addFaq}>
               <div className="space-y-3">
                 {faqs.map((f, i) => (
-                  <div key={i} className="rounded-xl border border-border p-4 space-y-2">
+                  <div key={`${f.q || 'faq'}-${i}`} className="rounded-xl border border-border p-4 space-y-2">
                     <Input value={f.q} onChange={(e) => updateFaq(i, { q: e.target.value })} className="bg-background/60" placeholder="Question" />
                     <Textarea value={f.a} onChange={(e) => updateFaq(i, { a: e.target.value })} className="bg-background/60" rows={2} placeholder="Answer" />
                     <button onClick={() => removeFaq(i)} className="text-xs text-muted-foreground hover:text-red-400 inline-flex items-center gap-1">

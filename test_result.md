@@ -224,7 +224,7 @@ frontend:
 metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 1
+  test_sequence: 2
   run_ui: false
 
 test_plan:
@@ -264,3 +264,80 @@ agent_communication:
       Data persistence confirmed via MongoDB operations.
       
       Backend is production-ready with no critical issues found.
+
+
+  - agent: "main"
+    message: |
+      Applied code-review fixes. Please re-verify backend still works end-to-end:
+
+      Critical backend change:
+      - server.py require_admin(): initialized `payload = None` before try, and added
+        `if not payload or payload.get("role") != "admin":` guard so undefined-variable
+        static analysis warning is resolved without changing behaviour.
+
+      Re-test the full auth + content flow:
+      1. GET /api/ 200 message.
+      2. GET /api/content returns full seeded content.
+      3. POST /api/admin/login with wrong password -> 401.
+      4. POST /api/admin/login with wrong email -> 401.
+      5. POST /api/admin/login with payelraj26@gmail.com / rajlaxmi@2025 -> 200 token.
+      6. GET /api/admin/verify no token -> 401; random bad token -> 401; valid token -> 200 ok true.
+      7. PUT /api/content without token -> 401; with valid token updating business.phone to
+         "+919999999999" persists via subsequent GET; restore original phone at end.
+      8. POST /api/enquiries with valid body -> 200 uuid; GET /api/enquiries no token -> 401,
+         with token includes created; DELETE with token removes it.
+
+  - agent: "testing"
+    message: |
+      ✅ RE-VERIFICATION COMPLETE - ALL TESTS PASSED (16/16 tests, 100% success rate)
+      
+      Post code-review fix verification completed successfully. The `require_admin` dependency 
+      changes (payload = None initialization and enhanced guard check) work correctly with 
+      NO behavioral changes detected.
+      
+      Detailed test results:
+      
+      1. ✅ GET /api/ -> 200 with message "Sri Rajlaxmi Light House API is running."
+      2. ✅ GET /api/content -> 200 with complete structure:
+         - business (phone, whatsapp, email, address, mapsQuery, hours, hoursFull) ✓
+         - hero (image, titleLine1, titleAccent, subtitle) ✓
+         - about (body list, stats[4], chips list) ✓
+         - categories[12] with id/name/icon ✓
+         - products[8] with all required fields ✓
+         - whyUs[8] with icon/title/text ✓
+         - gallery[9] with title/image ✓
+         - faqs[6] with q/a ✓
+      
+      3. ✅ POST /api/admin/login authentication:
+         - Wrong password (payelraj26@gmail.com/wrong) -> 401 ✓
+         - Wrong email (hacker@example.com/rajlaxmi@2025) -> 401 ✓
+         - Correct credentials (payelraj26@gmail.com/rajlaxmi@2025) -> 200 with JWT token (187 chars) ✓
+      
+      4. ✅ GET /api/admin/verify token validation:
+         - No Authorization header -> 401 ✓
+         - Invalid token (Bearer invalid_random_token_12345) -> 401 ✓
+         - Valid admin token -> 200 with {ok: true, email: payelraj26@gmail.com} ✓
+      
+      5. ✅ PUT /api/content updates:
+         - No token -> 401 ✓
+         - With admin token, updated business.phone to +919999999999 and whatsapp to 919999999999 -> 200 ✓
+         - Subsequent GET confirmed persistence ✓
+         - Successfully restored original values (phone: +918870524744, whatsapp: 918870524744) ✓
+      
+      6. ✅ POST /api/enquiries -> 200 with UUID id (9d5d9f37-b5ae-4bfa-ba21-0a9797548be6) ✓
+      
+      7. ✅ GET /api/enquiries admin-only access:
+         - No token -> 401 ✓
+         - With admin token -> 200 with list containing created enquiry, all fields verified ✓
+      
+      8. ✅ DELETE /api/enquiries/{id} admin-only deletion:
+         - No token -> 401 ✓
+         - With admin token -> 200 {ok: true}, follow-up GET confirmed deletion ✓
+      
+      Test execution time: 2.94 seconds
+      Base URL: https://rajlakshmi-showcase.preview.emergentagent.com/api
+      Credentials verified: payelraj26@gmail.com / rajlaxmi@2025
+      
+      CONCLUSION: The code-review fix to require_admin() is working perfectly. The auth guard 
+      still correctly rejects unauthorized requests and accepts valid admin tokens. No 
+      regressions detected. Backend is production-ready.

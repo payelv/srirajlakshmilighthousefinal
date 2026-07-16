@@ -63,7 +63,7 @@ export default function About() {
             <span className="gold-gradient-text italic">{about.titleAccent}</span>
           </h2>
           {about.body.map((p, i) => (
-            <p key={i} className="mt-6 text-muted-foreground leading-relaxed max-w-xl">
+            <p key={`about-p-${i}-${p.slice(0, 20)}`} className="mt-6 text-muted-foreground leading-relaxed max-w-xl">
               {p}
             </p>
           ))}

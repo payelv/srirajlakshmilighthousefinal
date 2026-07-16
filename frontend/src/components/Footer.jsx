@@ -23,8 +23,17 @@ export default function Footer() {
             Kochi's trusted wholesale dealer in premium chandeliers, LED lights, and decorative fittings for homes, hotels, offices and commercial spaces.
           </p>
           <div className="mt-6 flex gap-3">
-            {[Instagram, Facebook, Youtube].map((Icon, i) => (
-              <a key={i} href="#" className="w-10 h-10 rounded-full border border-border hover:border-amber-500/60 flex items-center justify-center text-muted-foreground hover:text-amber-400 transition-colors">
+            {[
+              { Icon: Instagram, label: 'Instagram' },
+              { Icon: Facebook, label: 'Facebook' },
+              { Icon: Youtube, label: 'YouTube' },
+            ].map(({ Icon, label }) => (
+              <a
+                key={label}
+                href="#"
+                aria-label={label}
+                className="w-10 h-10 rounded-full border border-border hover:border-amber-500/60 flex items-center justify-center text-muted-foreground hover:text-amber-400 transition-colors"
+              >
                 <Icon className="w-4 h-4" />
               </a>
             ))}

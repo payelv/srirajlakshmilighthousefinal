@@ -78,13 +78,14 @@ def create_token(subject: str) -> str:
 def require_admin(credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer)):
     if not credentials or not credentials.credentials:
         raise HTTPException(status_code=401, detail="Missing token")
+    payload: Optional[Dict[str, Any]] = None
     try:
         payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALG])
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
-    if payload.get("role") != "admin":
+    if not payload or payload.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not an admin")
     return payload
 
