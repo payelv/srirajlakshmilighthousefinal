@@ -15,16 +15,22 @@ export default function Hero() {
   return (
     <section id="home" className="relative min-h-screen w-full overflow-hidden">
       {/* Background image with overlay */}
-      <div className="absolute inset-0">
-        <img
-          src={hero.image}
-          alt="Luxury chandelier interior"
-          className="w-full h-full object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/50 to-background" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/30 to-transparent" />
-        <div className="absolute inset-0 subtle-noise opacity-30 mix-blend-overlay pointer-events-none" />
-      </div>
+     <div className="absolute inset-0">
+  <img
+    src={hero.image}
+    alt="Luxury chandelier interior"
+    className="w-full h-full object-cover object-[65%_center] brightness-75"
+  />
+
+  {/* Dark glass overlay */}
+  <div className="absolute inset-0 bg-black/40" />
+
+  {/* Left text protection */}
+  <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
+
+  {/* Bottom fade */}
+  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+</div>
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 pt-40 pb-32 min-h-screen flex flex-col justify-center">
@@ -34,13 +40,13 @@ export default function Hero() {
             {hero.eyebrow}
           </span>
 
-          <h1 className="mt-8 font-serif text-5xl sm:text-6xl lg:text-8xl leading-[1.02] text-foreground">
+<h1 className="mt-8 font-serif text-5xl sm:text-6xl lg:text-8xl leading-[1.02] text-white">
             {hero.titleLine1}
             <br />
             <span className="gold-gradient-text italic">{hero.titleAccent}</span>
           </h1>
 
-          <p className="mt-8 text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed">
+<p className="mt-8 text-base sm:text-lg text-white/80 max-w-xl leading-relaxed">
             {hero.subtitle}
           </p>
 
@@ -55,7 +61,7 @@ export default function Hero() {
             <Button
               onClick={() => scrollTo('#contact')}
               variant="outline"
-              className="h-12 rounded-full border-amber-500/40 hover:border-amber-400 bg-transparent hover:bg-amber-500/5 text-foreground px-6"
+              className="h-12 rounded-full border-white/40 hover:border-amber-400 bg-white/10 hover:bg-amber-500/10 text-white px-6 backdrop-blur"
             >
               {hero.ctaSecondary}
             </Button>
