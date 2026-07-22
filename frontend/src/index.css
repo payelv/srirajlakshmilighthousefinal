@@ -158,6 +158,7 @@ code {
   }
   /* Fix invisible text in light mode */
 .light .text-white,
+  .light .text-stone-50,
 .light .text-stone-100,
 .light .text-stone-200,
 .light .text-stone-300 {
