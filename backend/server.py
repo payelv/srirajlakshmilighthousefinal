@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
+from supabase import create_client, Client
 import os
 import logging
 import uuid
@@ -24,6 +25,13 @@ load_dotenv(ROOT_DIR / ".env")
 mongo_url = os.environ["MONGO_URL"]
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ["DB_NAME"]]
+SUPABASE_URL = os.environ["SUPABASE_URL"]
+SUPABASE_KEY = os.environ["SUPABASE_KEY"]
+
+supabase: Client = create_client(
+    SUPABASE_URL,
+    SUPABASE_KEY
+)
 
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "payelraj26@gmail.com").strip().lower()
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "rajlaxmi@2025")
@@ -180,59 +188,47 @@ async def upload_file(
     file: UploadFile = File(...),
     _admin=Depends(require_admin),
 ):
-    """Upload an image (or any binary asset) from the admin panel.
-
-    Streams the file to disk in 1 MB chunks so we can handle large files without
-    loading them entirely into memory. Returns an absolute URL that can be stored
-    directly in the site content (e.g. product image).
-    """
     original = file.filename or "upload.bin"
     ext = os.path.splitext(original)[1].lower()
+
     if ext not in ALLOWED_IMAGE_EXTS and file.content_type and not file.content_type.startswith("image/"):
-        # allow common image extensions; also permit anything the browser flagged as image/*
-        raise HTTPException(status_code=400, detail=f"Unsupported file type: {ext or file.content_type}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file type: {ext or file.content_type}"
+        )
+
     if not ext:
-        # fall back based on content-type
-        ct = (file.content_type or "").lower()
-        ext_map = {
-            "image/jpeg": ".jpg",
-            "image/png": ".png",
-            "image/webp": ".webp",
-            "image/gif": ".gif",
-            "image/svg+xml": ".svg",
-            "image/avif": ".avif",
-            "image/bmp": ".bmp",
-        }
-        ext = ext_map.get(ct, ".bin")
+        ext = ".jpg"
 
     fname = f"{uuid.uuid4().hex}{ext}"
-    fpath = UPLOAD_DIR / fname
 
-    total = 0
     try:
-        with fpath.open("wb") as out:
-            while True:
-                chunk = await file.read(1024 * 1024)  # 1 MB chunks
-                if not chunk:
-                    break
-                out.write(chunk)
-                total += len(chunk)
-    except Exception as e:
-        # cleanup on failure
-        try:
-            fpath.unlink(missing_ok=True)
-        except Exception:
-            pass
-        raise HTTPException(status_code=500, detail=f"Upload failed: {e}") from e
+        file_bytes = await file.read()
 
-    base = str(request.base_url).rstrip("/")
-    return {
-        "url": f"{base}/api/uploads/{fname}",
-        "path": f"/api/uploads/{fname}",
-        "filename": fname,
-        "size": total,
-        "contentType": file.content_type,
-    }
+        supabase.storage.from_("product-images").upload(
+            path=fname,
+            file=file_bytes,
+            file_options={
+                "content-type": file.content_type,
+                "upsert": "false",
+            },
+        )
+
+        public_url = supabase.storage.from_("product-images").get_public_url(fname)
+
+        return {
+            "url": public_url,
+            "path": public_url,
+            "filename": fname,
+            "size": len(file_bytes),
+            "contentType": file.content_type,
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Upload failed: {str(e)}"
+        )
 
 
 # Mount router
