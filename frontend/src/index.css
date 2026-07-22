@@ -40,25 +40,25 @@ code {
     --radius: 0.75rem;
   }
 
-  .light {
-    --background: 40 30% 97%;
-    --foreground: 20 14% 8%;
-    --card: 0 0% 100%;
-    --card-foreground: 20 14% 8%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 14% 8%;
-    --primary: 30 80% 40%;
-    --primary-foreground: 40 30% 97%;
-    --secondary: 40 20% 92%;
-    --secondary-foreground: 20 14% 8%;
-    --muted: 40 20% 92%;
-    --muted-foreground: 30 8% 40%;
-    --accent: 30 80% 45%;
-    --accent-foreground: 40 30% 97%;
-    --border: 40 15% 85%;
-    --input: 40 15% 88%;
-    --ring: 30 80% 40%;
-  }
+.light {
+  --background: 40 30% 67%;
+  --foreground: 20 14% 5%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14% 5%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14% 5%;
+  --primary: 30 80% 40%;
+  --primary-foreground: 40 30% 97%;
+  --secondary: 40 20% 92%;
+  --secondary-foreground: 20 14% 5%;
+  --muted: 40 20% 92%;
+  --muted-foreground: 20 10% 25%;
+  --accent: 30 80% 45%;
+  --accent-foreground: 40 30% 97%;
+  --border: 40 15% 85%;
+  --input: 40 15% 88%;
+  --ring: 30 80% 40%;
+}
 }
 
 @layer base {
