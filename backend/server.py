@@ -182,6 +182,9 @@ async def delete_enquiry(eid: str, _admin=Depends(require_admin)):
     return {"ok": True}
 
 
+import tempfile
+
+
 @api.post("/upload")
 async def upload_file(
     request: Request,
@@ -191,28 +194,26 @@ async def upload_file(
     original = file.filename or "upload.bin"
     ext = os.path.splitext(original)[1].lower()
 
-    if ext not in ALLOWED_IMAGE_EXTS and file.content_type and not file.content_type.startswith("image/"):
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unsupported file type: {ext or file.content_type}"
-        )
-
-    if not ext:
-        ext = ".jpg"
+    if ext not in ALLOWED_IMAGE_EXTS:
+        raise HTTPException(status_code=400, detail="Unsupported file type")
 
     fname = f"{uuid.uuid4().hex}{ext}"
 
     try:
-        file_bytes = await file.read()
+        # Save uploaded file temporarily
+        with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as temp:
+            temp.write(await file.read())
+            temp_path = temp.name
 
-        supabase.storage.from_("product-images").upload(
-            path=fname,
-            file=file_bytes,
-            file_options={
-                "content-type": file.content_type,
-                "upsert": "false",
-            },
-        )
+        # Upload to Supabase Storage
+        with open(temp_path, "rb") as f:
+            supabase.storage.from_("product-images").upload(
+                fname,
+                f,
+                {"content-type": file.content_type}
+            )
+
+        os.remove(temp_path)
 
         public_url = supabase.storage.from_("product-images").get_public_url(fname)
 
@@ -220,15 +221,11 @@ async def upload_file(
             "url": public_url,
             "path": public_url,
             "filename": fname,
-            "size": len(file_bytes),
-            "contentType": file.content_type,
         }
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Upload failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 
 # Mount router
