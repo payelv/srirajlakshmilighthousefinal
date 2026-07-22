@@ -42,7 +42,7 @@ code {
 
 .light {
   --background: 40 30% 97%;
-  --foreground: 20 14% 3%;
+  --foreground: 20 14% 50%;
   --card: 0 0% 100%;
   --card-foreground: 20 14% 5%;
   --popover: 0 0% 100%;
