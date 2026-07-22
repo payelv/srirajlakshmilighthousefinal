@@ -77,4 +77,4 @@ export default function Hero() {
       </div>
     </section>
   );
-} i have to fix this 
+} 
