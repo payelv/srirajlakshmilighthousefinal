@@ -6,7 +6,6 @@ import { useContent } from '../context/ContentContext';
 const LINKS = [
   { label: 'Home', href: '#home' },
   { label: 'About', href: '#about' },
-  { label: 'Products', href: '#products' },
   { label: 'Collections', href: '#collections' },
   { label: 'Gallery', href: '#gallery' },
   { label: 'Contact', href: '#contact' },
