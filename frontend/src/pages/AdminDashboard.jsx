@@ -276,39 +276,59 @@ export default function AdminDashboard() {
           <TabsContent value="products" className="mt-8">
             <SectionCard title="Products" onSave={saveProducts} onAdd={addProduct}>
               <div className="space-y-4">
-                {products.map((p) => (
-                  <div key={p.id} className="rounded-xl border border-border p-4 grid md:grid-cols-[120px,1fr,auto] gap-4 items-start">
-                    <img src={p.image} alt="" className="w-full md:w-[120px] h-[120px] rounded-lg object-cover bg-muted" onError={(e) => (e.currentTarget.style.opacity = 0.25)} />
-                    <div className="grid md:grid-cols-2 gap-3">
-                      <Input value={p.name} onChange={(e) => updateProduct(p.id, { name: e.target.value })} className="bg-background/60 h-9" placeholder="Name" />
-                      <Input type="number" value={p.price} onChange={(e) => updateProduct(p.id, { price: Number(e.target.value) })} className="bg-background/60 h-9" placeholder="Price (INR)" />
-                      <div className="md:col-span-2">
-                        <ImageUploadField
-                          value={p.image}
-                          onChange={(v) => updateProduct(p.id, { image: v })}
-                          placeholder="Product image URL or upload from device"
-                        />
-                      </div>
-                      <Select value={p.category} onValueChange={(v) => updateProduct(p.id, { category: v })}>
-                        <SelectTrigger className="bg-background/60 h-9"><SelectValue placeholder="Category" /></SelectTrigger>
-                        <SelectContent>
-                          {cats.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                      <Select value={p.featured ? 'yes' : 'no'} onValueChange={(v) => updateProduct(p.id, { featured: v === 'yes' })}>
-                        <SelectTrigger className="bg-background/60 h-9"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="yes">Featured</SelectItem>
-                          <SelectItem value="no">Not Featured</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Textarea value={p.description} onChange={(e) => updateProduct(p.id, { description: e.target.value })} className="bg-background/60 md:col-span-2" rows={2} placeholder="Description" />
-                    </div>
-                    <button onClick={() => removeProduct(p.id)} className="w-9 h-9 rounded-full border border-border hover:border-red-500/60 flex items-center justify-center text-muted-foreground hover:text-red-400">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                            {products.map((p) => (
+              <div key={p.id} className="rounded-xl border border-border p-4 grid md:grid-cols-[120px,1fr,auto] gap-4 items-start">
+                <img src={p.image} alt="" className="w-full md:w-[120px] h-[120px] rounded-lg object-cover bg-muted" onError={(e) => (e.currentTarget.style.opacity = 0.25)} />
+                <div className="grid md:grid-cols-2 gap-3">
+                  <Input value={p.name} onChange={(e) => updateProduct(p.id, { name: e.target.value })} className="bg-background/60 h-9" placeholder="Name" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input type="number" value={p.price} onChange={(e) => updateProduct(p.id, { price: Number(e.target.value) })} className="bg-background/60 h-9" placeholder="Sale Price (INR)" />
+                    <Input type="number" value={p.mrp || ''} onChange={(e) => updateProduct(p.id, { mrp: Number(e.target.value) })} className="bg-background/60 h-9" placeholder="MRP (optional)" />
                   </div>
-                ))}
+                  <div className="md:col-span-2">
+                    <div className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Product Photos (up to 3)</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {[0, 1, 2].map((idx) => (
+                        <ImageUploadField
+                          key={idx}
+                          value={(p.images && p.images[idx]) || ''}
+                          onChange={(v) => {
+                            const base = p.images && p.images.length ? p.images : [p.image || '', '', ''];
+                            const nextImages = [...base];
+                            nextImages[idx] = v;
+                            updateProduct(p.id, { images: nextImages, image: nextImages[0] || p.image });
+                          }}
+                          placeholder={`Photo ${idx + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <Input
+                    value={(p.colours || []).join(', ')}
+                    onChange={(e) => updateProduct(p.id, { colours: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })}
+                    className="bg-background/60 h-9 md:col-span-2"
+                    placeholder="Colours (comma separated, e.g. Antique Brass, Matte Black)"
+                  />
+                  <Select value={p.category} onValueChange={(v) => updateProduct(p.id, { category: v })}>
+                    <SelectTrigger className="bg-background/60 h-9"><SelectValue placeholder="Category" /></SelectTrigger>
+                    <SelectContent>
+                      {cats.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Select value={p.featured ? 'yes' : 'no'} onValueChange={(v) => updateProduct(p.id, { featured: v === 'yes' })}>
+                    <SelectTrigger className="bg-background/60 h-9"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="yes">Featured</SelectItem>
+                      <SelectItem value="no">Not Featured</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Textarea value={p.description} onChange={(e) => updateProduct(p.id, { description: e.target.value })} className="bg-background/60 md:col-span-2" rows={2} placeholder="Description" />
+                </div>
+                <button onClick={() => removeProduct(p.id)} className="w-9 h-9 rounded-full border border-border hover:border-red-500/60 flex items-center justify-center text-muted-foreground hover:text-red-400">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
               </div>
             </SectionCard>
           </TabsContent>
