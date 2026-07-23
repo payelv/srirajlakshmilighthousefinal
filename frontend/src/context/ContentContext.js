@@ -26,7 +26,7 @@ function readCache() {
 export function ContentProvider({ children }) {
   const [content, setContent] = useState(readCache);
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState(() => localStorage.getItem(THEME_KEY) || 'dark');
+  const [theme, setTheme] = useState(() => localStorage.getItem(THEME_KEY) || 'light');
 
   useEffect(() => {
     document.documentElement.classList.remove('light', 'dark');
