@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Lightbulb, Menu, Sun, Moon, X } from 'lucide-react';
+import { Lightbulb, Menu, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useContent } from '../context/ContentContext';
 
@@ -13,7 +13,7 @@ const LINKS = [
 ];
 
 export default function Navbar() {
-  const { content, theme, toggleTheme } = useContent();
+  const { content } = useContent();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -64,13 +64,6 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={toggleTheme}
-            className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:border-amber-500/60 transition-colors"
-            aria-label="toggle theme"
-          >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
-          </button>
           <Button
             onClick={() => scrollTo('#contact')}
             className="hidden sm:inline-flex bg-amber-500 hover:bg-amber-400 text-black font-medium rounded-full px-5"
