@@ -2,7 +2,6 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import About from '../components/About';
-import Categories from '../components/Categories';
 import Products from '../components/Products';
 import WhyChooseUs from '../components/WhyChooseUs';
 import Gallery from '../components/Gallery';
@@ -18,7 +17,6 @@ export default function Landing() {
       <main>
         <Hero />
         <About />
-        <Categories />
         <Products />
         <WhyChooseUs />
         <Gallery />
