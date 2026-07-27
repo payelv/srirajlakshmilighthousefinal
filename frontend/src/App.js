@@ -7,6 +7,8 @@ import Landing from './pages/Landing';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminProtected from './pages/AdminProtected';
+import CategoryPage from './pages/CategoryPage';
+import ProductPage from './pages/ProductPage';
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/category/:catId" element={<CategoryPage />} />
+          <Route path="/product/:id" element={<ProductPage />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route
             path="/admin/dashboard"
