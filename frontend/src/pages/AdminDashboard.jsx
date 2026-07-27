@@ -258,6 +258,7 @@ export default function AdminDashboard() {
                     <img src={c.image} alt="" className="w-20 h-20 rounded-lg object-cover bg-muted flex-shrink-0" onError={(e) => (e.currentTarget.style.opacity = 0.25)} />
                     <div className="flex-1 space-y-2">
                       <Input value={c.name} onChange={(e) => updateCat(c.id, { name: e.target.value })} className="bg-background/60 h-9" placeholder="Name" />
+              <Input value={c.section || ''} onChange={(e) => updateCat(c.id, { section: e.target.value })} placeholder="Section (e.g. Wall Lights)" className="bg-background/60 mb-2" />
                       <ImageUploadField value={c.image} onChange={(v) => updateCat(c.id, { image: v })} placeholder="Category image URL or upload" />
                       <div className="flex gap-2 items-center">
                         <Input value={c.icon} onChange={(e) => updateCat(c.id, { icon: e.target.value })} className="bg-background/60 h-9 flex-1" placeholder="lucide icon name (e.g. Lightbulb)" />
