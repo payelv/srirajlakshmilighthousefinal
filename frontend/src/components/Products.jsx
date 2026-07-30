@@ -33,7 +33,7 @@ export default function Products() {
               {sectionName !== '__none__' && (
                 <h3 className="text-center font-serif text-2xl lg:text-3xl mb-6">{sectionName}</h3>
               )}
-              <div className="rounded-2xl border border-border bg-card/40 p-6 flex flex-wrap gap-8 justify-center">
+              <div className="rounded-2xl border border-border bg-card/40 p-6 flex flex-wrap gap-x-8 gap-y-10 justify-center">
                 {cats.map((c) => (
                   <CategoryCircle key={c.id} label={c.name} image={c.image} to={`/category/${c.id}`} />
                 ))}
@@ -48,11 +48,11 @@ export default function Products() {
 
 function CategoryCircle({ label, image, to }) {
   return (
-    <Link to={to} className="flex-shrink-0 w-[96px] text-center group">
-      <div className="w-[80px] h-[80px] mx-auto rounded-full p-[3px] border-2 border-amber-500/60 group-hover:border-amber-400 transition-colors">
-        <img src={image} alt={label} className="w-full h-full object-cover rounded-full" />
+    <Link to={to} className="flex-shrink-0 w-[132px] text-center group">
+      <div className="w-[128px] h-[128px] mx-auto rounded-[22px] p-[3px] border-2 border-amber-500/60 group-hover:border-amber-400 transition-colors">
+        <img src={image} alt={label} className="w-full h-full object-cover rounded-[18px]" />
       </div>
-      <div className="mt-2 text-[10px] tracking-wide uppercase text-muted-foreground group-hover:text-amber-400">
+      <div className="mt-3 text-sm font-semibold tracking-wide uppercase text-foreground group-hover:text-amber-400">
         {label}
       </div>
     </Link>
