@@ -45,6 +45,7 @@ UPLOAD_DIR = ROOT_DIR / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 ALLOWED_IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".svg", ".avif"}
+ALLOWED_VIDEO_EXTS = {".mp4", ".mov", ".webm", ".m4v", ".avi", ".mkv"}
 
 app = FastAPI(title="Sri Rajlaxmi Light House API")
 api = APIRouter(prefix="/api")
@@ -110,6 +111,13 @@ async def get_or_seed_content() -> Dict[str, Any]:
         seed = {"_id": SITE_DOC_ID, **DEFAULT_CONTENT, "updated_at": datetime.now(timezone.utc).isoformat()}
         await db.site_content.insert_one(seed)
         doc = seed
+    else:
+        # Backfill any newly-added default sections (e.g. testimonials) that
+        # don't exist yet on older documents, without touching existing data.
+        missing = {k: v for k, v in DEFAULT_CONTENT.items() if k not in doc}
+        if missing:
+            await db.site_content.update_one({"_id": SITE_DOC_ID}, {"$set": missing})
+            doc.update(missing)
     doc.pop("_id", None)
     return doc
 
@@ -133,7 +141,7 @@ async def update_content(body: Dict[str, Any], _admin=Depends(require_admin)):
     await get_or_seed_content()
 
     # Only allow known top-level keys to prevent stray fields.
-    allowed = {"business", "hero", "about", "categories", "products", "whyUs", "gallery", "faqs"}
+    allowed = {"business", "hero", "about", "categories", "products", "whyUs", "gallery", "faqs", "testimonials"}
     patch = {k: v for k, v in body.items() if k in allowed}
     if not patch:
         raise HTTPException(status_code=400, detail="No valid fields to update.")
@@ -194,7 +202,7 @@ async def upload_file(
     original = file.filename or "upload.bin"
     ext = os.path.splitext(original)[1].lower()
 
-    if ext not in ALLOWED_IMAGE_EXTS:
+    if ext not in ALLOWED_IMAGE_EXTS and ext not in ALLOWED_VIDEO_EXTS:
         raise HTTPException(status_code=400, detail="Unsupported file type")
 
     fname = f"{uuid.uuid4().hex}{ext}"
