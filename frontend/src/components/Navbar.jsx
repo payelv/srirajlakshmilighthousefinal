@@ -49,12 +49,12 @@ export default function Navbar() {
     >
       <nav className="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
         <button onClick={() => scrollTo('#home')} className="flex items-center gap-3 group">
-          <span className="w-10 h-10 rounded-full border border-amber-500/40 flex items-center justify-center bg-amber-500/5 group-hover:bg-amber-500/15 transition-colors">
-            <Lightbulb className="w-5 h-5 text-amber-400" />
+          <span className="w-[52px] h-[52px] rounded-full border border-amber-500/40 flex items-center justify-center bg-amber-500/5 group-hover:bg-amber-500/15 transition-colors">
+            <Lightbulb className="w-7 h-7 text-amber-400" />
           </span>
           <span className="leading-tight text-left">
-            <span className="block font-serif text-lg text-foreground">{content.business.name}</span>
-            <span className="block text-[10px] tracking-[0.35em] text-muted-foreground">
+            <span className="block font-serif text-2xl text-foreground">{content.business.name}</span>
+            <span className="block text-xs tracking-[0.3em] text-muted-foreground">
               {content.business.tagline}
             </span>
           </span>
