@@ -110,6 +110,12 @@ DEFAULT_CONTENT = {
         {"title": "Hotels", "image": "https://images.pexels.com/photos/34496713/pexels-photo-34496713.jpeg?auto=compress&w=1200"},
         {"title": "Modern Interiors", "image": "https://images.pexels.com/photos/30699851/pexels-photo-30699851.jpeg?auto=compress&w=1200"},
     ],
+    "testimonials": [
+        {"name": "Ravi Menon", "role": "Homeowner, Kochi", "quote": "", "video": ""},
+        {"name": "Anjali Nair", "role": "Interior Designer", "quote": "", "video": ""},
+        {"name": "Thomas Varghese", "role": "Hotel Owner", "quote": "", "video": ""},
+        {"name": "Fathima Beevi", "role": "Homeowner", "quote": "", "video": ""},
+    ],
     "faqs": [
         {"q": "How do I choose the right lighting for my space?", "a": "Consider room purpose, ceiling height, ambient vs task needs, and existing decor. Our team offers free in-showroom consultation to guide selection based on layout, style preference, and budget."},
         {"q": "Do you offer lighting consultation?", "a": "Yes — we provide expert lighting design consultation for homes, offices, hotels and commercial projects. Bring your floor plan or photos and we'll craft a plan."},
