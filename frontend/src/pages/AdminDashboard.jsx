@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Lightbulb, LogOut, Home, Save, Trash2, Plus, Loader2,
-  Package, MapPin, Info, FileText, LayoutGrid, Images, HelpCircle, Inbox,
+  Package, MapPin, Info, FileText, LayoutGrid, Images, HelpCircle, Inbox, Quote,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -17,6 +17,7 @@ import { useContent } from '../context/ContentContext';
 import { useToast } from '../hooks/use-toast';
 import { enquiryApi } from '../api';
 import ImageUploadField from '../components/ImageUploadField';
+import VideoUploadField from '../components/VideoUploadField';
 
 export default function AdminDashboard() {
   const nav = useNavigate();
@@ -47,6 +48,7 @@ export default function AdminDashboard() {
   useEffect(() => { setCats(content.categories); }, [content.categories]);
   useEffect(() => { setGallery(content.gallery); }, [content.gallery]);
   useEffect(() => { setFaqs(content.faqs); }, [content.faqs]);
+  useEffect(() => { setTestimonials(content.testimonials || []); }, [content.testimonials]);
 
   // ---- Business ----
   const [biz, setBiz] = useState(content.business);
@@ -101,6 +103,13 @@ export default function AdminDashboard() {
   const removeFaq = (i) => setFaqs((prev) => prev.filter((_, idx) => idx !== i));
   const addFaq = () => setFaqs((prev) => [...prev, { q: 'New question', a: 'Answer here.' }]);
   const saveFaqs = () => doSave({ faqs });
+
+  // ---- Testimonials ----
+  const [testimonials, setTestimonials] = useState(content.testimonials || []);
+  const updateTesti = (i, patch) => setTestimonials((prev) => prev.map((x, idx) => (idx === i ? { ...x, ...patch } : x)));
+  const removeTesti = (i) => setTestimonials((prev) => prev.filter((_, idx) => idx !== i));
+  const addTesti = () => setTestimonials((prev) => [...prev, { name: 'New Customer', role: '', quote: '', video: '' }]);
+  const saveTestimonials = () => doSave({ testimonials });
 
   // ---- Enquiries ----
   const [enquiries, setEnquiries] = useState([]);
@@ -166,6 +175,7 @@ export default function AdminDashboard() {
             <TabTrig value="categories" icon={<LayoutGrid className="w-4 h-4" />} label="Categories" />
             <TabTrig value="products" icon={<Package className="w-4 h-4" />} label="Products" />
             <TabTrig value="gallery" icon={<Images className="w-4 h-4" />} label="Gallery" />
+            <TabTrig value="testimonials" icon={<Quote className="w-4 h-4" />} label="Testimonials" />
             <TabTrig value="faqs" icon={<HelpCircle className="w-4 h-4" />} label="FAQs" />
             <TabTrig value="enquiries" icon={<Inbox className="w-4 h-4" />} label="Enquiries" />
           </TabsList>
@@ -348,6 +358,25 @@ export default function AdminDashboard() {
                         <Trash2 className="w-3 h-3" /> Remove
                       </button>
                     </div>
+                  </div>
+                ))}
+              </div>
+            </SectionCard>
+          </TabsContent>
+
+          {/* TESTIMONIALS */}
+          <TabsContent value="testimonials" className="mt-8">
+            <SectionCard title="Testimonials" onSave={saveTestimonials} onAdd={addTesti}>
+              <div className="grid md:grid-cols-2 gap-4">
+                {testimonials.map((tItem, i) => (
+                  <div key={`${tItem.name || 'testimonial'}-${i}`} className="rounded-xl border border-border p-4 space-y-2">
+                    <Input value={tItem.name} onChange={(e) => updateTesti(i, { name: e.target.value })} className="bg-background/60 h-9" placeholder="Customer name" />
+                    <Input value={tItem.role} onChange={(e) => updateTesti(i, { role: e.target.value })} className="bg-background/60 h-9" placeholder="Role, e.g. Homeowner, Kochi" />
+                    <Textarea value={tItem.quote} onChange={(e) => updateTesti(i, { quote: e.target.value })} className="bg-background/60 min-h-[70px]" placeholder="Short quote" />
+                    <VideoUploadField value={tItem.video} onChange={(v) => updateTesti(i, { video: v })} placeholder="Video URL or upload from device" />
+                    <button onClick={() => removeTesti(i)} className="text-xs text-muted-foreground hover:text-red-400 inline-flex items-center gap-1">
+                      <Trash2 className="w-3 h-3" /> Remove
+                    </button>
                   </div>
                 ))}
               </div>
