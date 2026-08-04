@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Lightbulb, LogOut, Home, Save, Trash2, Plus, Loader2,
-  Package, MapPin, Info, FileText, LayoutGrid, Images, HelpCircle, Inbox, Quote,
+  Package, MapPin, Info, FileText, LayoutGrid, Images, HelpCircle, Inbox, Quote, Eye, EyeOff,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -77,6 +77,7 @@ export default function AdminDashboard() {
         image: '',
         description: '',
         featured: true,
+        hidden: false,
       },
       ...prev,
     ]);
@@ -335,6 +336,9 @@ export default function AdminDashboard() {
                   </Select>
                   <Textarea value={p.description} onChange={(e) => updateProduct(p.id, { description: e.target.value })} className="bg-background/60 md:col-span-2" rows={2} placeholder="Description" />
                 </div>
+                <button onClick={() => updateProduct(p.id, { hidden: !p.hidden })} className={`w-9 h-9 rounded-full border flex items-center justify-center ${p.hidden ? 'bg-amber-500/20 border-amber-500 text-amber-400' : 'border-border text-muted-foreground'}`} title={p.hidden ? 'Hidden from customers - click to show' : 'Visible on website - click to hide'}>
+                  {p.hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
                 <button onClick={() => removeProduct(p.id)} className="w-9 h-9 rounded-full border border-border hover:border-red-500/60 flex items-center justify-center text-muted-foreground hover:text-red-400">
                   <Trash2 className="w-4 h-4" />
                 </button>
