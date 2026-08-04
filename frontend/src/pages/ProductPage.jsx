@@ -14,7 +14,7 @@ export default function ProductPage() {
   const [colourIdx, setColourIdx] = useState(0);
   const [qty, setQty] = useState(1);
 
-  const product = products.find((p) => p.id === id);
+  const product = products.find((p) => p.id === id && !p.hidden);
   const category = product ? categories.find((c) => c.id === product.category) : null;
 
   const formatPrice = (n) =>
