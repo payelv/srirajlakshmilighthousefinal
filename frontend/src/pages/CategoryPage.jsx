@@ -16,7 +16,7 @@ export default function CategoryPage() {
   const category = categories.find((c) => c.id === catId);
 
   const filtered = useMemo(
-    () => products.filter((p) => p.category === catId),
+    () => products.filter((p) => p.category === catId && !p.hidden),
     [products, catId]
   );
   const visible = filtered.slice(0, shown);
