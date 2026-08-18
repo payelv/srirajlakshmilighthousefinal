@@ -2,6 +2,23 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useContent } from '../context/ContentContext';
 
+// Keyword-based fallback grouping, used only when a category doesn't have
+// its "Section" field filled in via the admin dashboard yet. Keeps the
+// Collections layout grouped (matching the requested design) out of the box,
+// while still respecting a manually-set c.section if one is present.
+const FALLBACK_SECTIONS = [
+  { name: 'Residential Lighting', match: /chandelier|pendant|ceiling|wall|decorative/i },
+  { name: 'Functional & Smart', match: /\bled\b|spot|smart/i },
+  { name: 'Outdoor & Garden', match: /outdoor|garden|gate/i },
+  { name: 'Commercial & Architectural', match: /commercial|architectural/i },
+];
+
+function resolveSection(category) {
+  if (category.section && category.section.trim()) return category.section.trim();
+  const found = FALLBACK_SECTIONS.find((s) => s.match.test(category.name || category.id || ''));
+  return found ? found.name : 'More Collections';
+}
+
 export default function Products() {
   const { content } = useContent();
   const { categories } = content;
@@ -9,7 +26,7 @@ export default function Products() {
   const groups = useMemo(() => {
     const map = new Map();
     categories.forEach((c) => {
-      const key = c.section && c.section.trim() ? c.section.trim() : '__none__';
+      const key = resolveSection(c);
       if (!map.has(key)) map.set(key, []);
       map.get(key).push(c);
     });
@@ -30,9 +47,7 @@ export default function Products() {
         <div className="space-y-14">
           {groups.map(([sectionName, cats]) => (
             <div key={sectionName}>
-              {sectionName !== '__none__' && (
-                <h3 className="text-center font-serif text-2xl lg:text-3xl mb-6">{sectionName}</h3>
-              )}
+              <h3 className="text-center font-serif text-2xl lg:text-3xl mb-6">{sectionName}</h3>
               <div className="rounded-2xl border border-border bg-card/40 p-6 flex flex-wrap gap-x-8 gap-y-10 justify-center">
                 {cats.map((c) => (
                   <CategoryCircle key={c.id} label={c.name} image={c.image} to={`/category/${c.id}`} />
