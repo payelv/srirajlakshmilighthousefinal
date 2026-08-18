@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowRight, Phone } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useContent } from '../context/ContentContext';
+import heroStorefront from './hero-storefront.jpg';
 
 export default function Hero() {
   const { content } = useContent();
@@ -16,16 +17,16 @@ export default function Hero() {
     <section
       id="home"
       className="relative overflow-hidden pt-40 pb-28 lg:pt-48 lg:pb-36"
-      style={{
-        background:
-          'radial-gradient(ellipse 90% 60% at 30% 0%, hsl(30 28% 12%) 0%, hsl(var(--background)) 55%, hsl(var(--background)) 100%)',
-      }}
     >
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${heroStorefront})` }}
+      />
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(circle at 82% 18%, rgba(184,134,63,.28), transparent 45%), radial-gradient(circle at 68% 30%, rgba(184,134,63,.14), transparent 40%)',
+            'radial-gradient(ellipse 70% 60% at 50% 40%, hsl(20 14% 4% / 0.82) 0%, hsl(20 14% 4% / 0.9) 60%, hsl(20 14% 4% / 0.95) 100%), radial-gradient(circle at 82% 18%, rgba(184,134,63,.18), transparent 45%)',
         }}
       />
 
