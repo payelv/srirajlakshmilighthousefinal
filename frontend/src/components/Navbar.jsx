@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Lightbulb, Menu, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useContent } from '../context/ContentContext';
 
@@ -14,7 +14,6 @@ const LINKS = [
 
 export default function Navbar() {
   const { content } = useContent();
-
   const [open, setOpen] = useState(false);
   const [isDarkBackground, setIsDarkBackground] = useState(true);
 
@@ -22,12 +21,12 @@ export default function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    const updateNavbarColor = () => {
-      const navbarY = 70;
+    const sections = Array.from(
+      document.querySelectorAll('section')
+    );
 
-      const sections = Array.from(
-        document.querySelectorAll('section')
-      );
+    const updateNavbarColor = () => {
+      const navbarPointY = 80;
 
       let activeSection = null;
 
@@ -35,8 +34,8 @@ export default function Navbar() {
         const rect = section.getBoundingClientRect();
 
         if (
-          rect.top <= navbarY &&
-          rect.bottom > navbarY
+          rect.top <= navbarPointY &&
+          rect.bottom >= navbarPointY
         ) {
           activeSection = section;
           break;
@@ -155,7 +154,8 @@ export default function Navbar() {
         right-0
         z-50
         bg-transparent
-        pointer-events-none
+        transition-colors
+        duration-500
       "
     >
       <nav
@@ -168,44 +168,104 @@ export default function Navbar() {
           lg:h-28
           flex
           items-center
-          justify-center
-          relative
+          justify-between
         "
       >
 
-        {/* DESKTOP NAVIGATION */}
-        <div
-          className="
-            hidden
-            lg:flex
+        {/* LOGO */}
+        <button
+          onClick={() => scrollTo('#home')}
+          className={`
+            flex
             items-center
-            justify-center
-            gap-10
-            pointer-events-auto
-          "
+            gap-4
+            ${textColor}
+            transition-colors
+            duration-500
+          `}
         >
-          {LINKS.map((link) => (
-            <button
-              key={link.href}
-              onClick={() => scrollTo(link.href)}
+          <span
+            className="
+              w-16
+              h-16
+              lg:w-20
+              lg:h-20
+              rounded-full
+              flex
+              items-center
+              justify-center
+              shrink-0
+            "
+          >
+            <Lightbulb
               className={`
-                relative
+                w-8
+                h-8
+                lg:w-10
+                lg:h-10
+                ${textColor}
+                transition-colors
+                duration-500
+              `}
+            />
+          </span>
+
+          <span className="leading-tight text-left">
+            <span
+              className={`
+                block
+                font-serif
+                text-3xl
+                lg:text-4xl
+                ${textColor}
+                transition-colors
+                duration-500
+              `}
+            >
+              {content.business.name}
+            </span>
+
+            <span
+              className={`
+                block
+                text-xs
+                lg:text-sm
+                tracking-[0.35em]
+                ${textColor}
+                opacity-70
+                transition-colors
+                duration-500
+              `}
+            >
+              {content.business.tagline}
+            </span>
+          </span>
+        </button>
+
+        {/* DESKTOP NAVIGATION */}
+        <div className="hidden lg:flex items-center gap-10">
+          {LINKS.map((l) => (
+            <button
+              key={l.href}
+              onClick={() => scrollTo(l.href)}
+              className={`
                 text-base
                 font-medium
                 ${textColor}
                 transition-all
                 duration-500
+                relative
                 group
               `}
             >
-              {link.label}
+              {l.label}
 
               <span
                 className={`
                   absolute
+                  -bottom-1
                   left-0
                   right-0
-                  -bottom-1
                   h-px
                   ${underlineColor}
                   scale-x-0
@@ -219,20 +279,15 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* VISIT SHOWROOM */}
-        <div
-          className="
-            hidden
-            sm:block
-            absolute
-            right-6
-            lg:right-10
-            pointer-events-auto
-          "
-        >
+        {/* RIGHT SIDE */}
+        <div className="flex items-center gap-3">
+
+          {/* SHOWROOM BUTTON */}
           <Button
             onClick={() => scrollTo('#contact')}
             className={`
+              hidden
+              sm:inline-flex
               h-12
               lg:h-14
               text-base
@@ -247,63 +302,53 @@ export default function Navbar() {
           >
             Visit Showroom
           </Button>
-        </div>
 
-        {/* MOBILE MENU BUTTON */}
-        <button
-          onClick={() => setOpen((value) => !value)}
-          className={`
-            lg:hidden
-            absolute
-            right-6
-            w-12
-            h-12
-            flex
-            items-center
-            justify-center
-            ${textColor}
-            pointer-events-auto
-            transition-colors
-            duration-500
-          `}
-          aria-label="menu"
-        >
-          {open ? (
-            <X className="w-6 h-6" />
-          ) : (
-            <Menu className="w-6 h-6" />
-          )}
-        </button>
+          {/* MOBILE MENU */}
+          <button
+            onClick={() => setOpen((o) => !o)}
+            className={`
+              lg:hidden
+              w-12
+              h-12
+              rounded-full
+              flex
+              items-center
+              justify-center
+              ${textColor}
+              transition-colors
+              duration-500
+            `}
+            aria-label="menu"
+          >
+            {open ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
+          </button>
+
+        </div>
       </nav>
 
       {/* MOBILE MENU */}
       {open && (
-        <div
-          className="
-            lg:hidden
-            absolute
-            top-24
-            left-0
-            right-0
-            bg-transparent
-            pointer-events-auto
-          "
-        >
-          <div className="px-6 py-4 flex flex-col items-end gap-4">
+        <div className="lg:hidden bg-transparent">
+          <div className="px-6 py-6 flex flex-col gap-4">
 
-            {LINKS.map((link) => (
+            {LINKS.map((l) => (
               <button
-                key={link.href}
-                onClick={() => scrollTo(link.href)}
+                key={l.href}
+                onClick={() => scrollTo(l.href)}
                 className={`
+                  text-left
                   text-lg
-                  font-medium
                   ${textColor}
+                  py-3
                   transition-colors
                   duration-500
                 `}
               >
-                {link.label}
+                {l.label}
               </button>
             ))}
 
