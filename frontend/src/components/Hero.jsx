@@ -68,9 +68,10 @@ export default function Hero() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse 70% 60% at 50% 40%, hsl(20 14% 4% / 0.82) 0%, hsl(20 14% 4% / 0.9) 60%, hsl(20 14% 4% / 0.95) 100%), radial-gradient(circle at 82% 18%, rgba(184,134,63,.18), transparent 45%)',
+            'radial-gradient(ellipse 70% 60% at 50% 40%, hsl(20 14% 4% / 0.42) 0%, hsl(20 14% 4% / 0.55) 60%, hsl(20 14% 4% / 0.68) 100%), radial-gradient(circle at 82% 18%, rgba(184,134,63,.18), transparent 45%)',
         }}
       />
+      <div className="absolute inset-x-0 bottom-0 h-2/3 pointer-events-none bg-gradient-to-t from-background via-background/60 to-transparent" />
 
       <div className="relative max-w-7xl mx-auto px-6 lg:px-10">
         <div className="max-w-3xl mx-auto text-center">
