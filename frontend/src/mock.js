@@ -209,10 +209,10 @@ export const DEFAULT_CONTENT = {
     { title: 'Modern Interiors', image: 'https://images.pexels.com/photos/30699851/pexels-photo-30699851.jpeg?auto=compress&w=1200' },
   ],
   testimonials: [
-    { name: 'Ravi Menon', role: 'Homeowner, Kochi', quote: '', video: '' },
-    { name: 'Anjali Nair', role: 'Interior Designer', quote: '', video: '' },
-    { name: 'Thomas Varghese', role: 'Hotel Owner', quote: '', video: '' },
-    { name: 'Fathima Beevi', role: 'Homeowner', quote: '', video: '' },
+    { name: 'Ravi Menon', role: 'Homeowner, Kochi', quote: 'The team helped us pick the perfect chandelier for our living room — quality and service were outstanding.', video: '' },
+    { name: 'Anjali Nair', role: 'Interior Designer', quote: 'As an interior designer, I rely on their range and expertise for every project. Never disappoints.', video: '' },
+    { name: 'Thomas Varghese', role: 'Hotel Owner', quote: 'Fitted out our entire hotel with their commercial lighting — on time, on budget, beautifully done.', video: '' },
+    { name: 'Fathima Beevi', role: 'Homeowner', quote: 'From the first consultation to installation, everything felt personal. Our home has never looked warmer.', video: '' },
   ],
   faqs: [
     { q: 'How do I choose the right lighting for my space?', a: 'Consider room purpose, ceiling height, ambient vs task needs, and existing decor. Our team offers free in-showroom consultation to guide selection based on layout, style preference, and budget.' },
