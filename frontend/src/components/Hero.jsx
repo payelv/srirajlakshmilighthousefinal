@@ -30,7 +30,7 @@ export default function Hero() {
       />
 
       <div className="relative max-w-7xl mx-auto px-6 lg:px-10">
-        <div className="max-w-2xl">
+        <div className="max-w-3xl mx-auto text-center">
           <span className="text-xs tracking-[0.35em] uppercase text-amber-400 font-semibold">
             {hero.eyebrow}
           </span>
@@ -40,11 +40,11 @@ export default function Hero() {
             <span className="gold-gradient-text italic">{hero.titleAccent}</span>
           </h1>
 
-          <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
+          <p className="mt-6 mx-auto text-base sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
             {hero.subtitle}
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center gap-4">
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
             <Button
               onClick={() => scrollTo('#collections')}
               className="h-14 rounded-full bg-amber-500 hover:bg-amber-400 text-black px-8 font-semibold text-sm group"
@@ -63,14 +63,14 @@ export default function Hero() {
 
           <a
             href={`tel:${business.phone}`}
-            className="mt-6 inline-flex items-center gap-2 text-sm text-foreground/80 hover:text-amber-400 transition-colors w-fit"
+            className="mt-6 inline-flex items-center justify-center gap-2 text-sm text-foreground/80 hover:text-amber-400 transition-colors w-fit mx-auto"
           >
             <Phone className="w-4 h-4 text-amber-500" />
             {hero.ctaTertiary}
           </a>
         </div>
 
-        <div className="relative mt-20 grid grid-cols-2 lg:grid-cols-4 border-t border-white/15 pt-9">
+        <div className="relative mt-20 grid grid-cols-2 lg:grid-cols-4 border-t border-white/15 pt-9 text-center">
           {about.stats.map((s) => (
             <div key={s.label}>
               <b className="block font-serif text-3xl text-amber-400">
