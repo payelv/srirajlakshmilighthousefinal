@@ -67,7 +67,7 @@ export default function Hero() {
             className="absolute inset-0"
             style={{
               background:
-                'linear-gradient(90deg, hsl(var(--background) / 0.92) 0%, hsl(var(--background) / 0.74) 24%, hsl(var(--background) / 0.5) 42%, hsl(var(--background) / 0.16) 60%, hsl(var(--background) / 0.02) 72%), linear-gradient(0deg, hsl(var(--background) / 0.35), transparent 40%)',
+                'linear-gradient(90deg, hsl(var(--background) / 0.5) 0%, hsl(var(--background) / 0.38) 24%, hsl(var(--background) / 0.24) 42%, hsl(var(--background) / 0.06) 60%, hsl(var(--background) / 0.02) 72%), linear-gradient(0deg, hsl(var(--background) / 0.18), transparent 40%)',
             }}
           />
 
