@@ -8,7 +8,7 @@ export default function Gallery() {
   const [active, setActive] = useState(null);
 
   return (
-    <section id="gallery" className="relative py-24 lg:py-32">
+    <section id="gallery" className="light bg-background text-foreground relative py-24 lg:py-32">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <div className="text-center mb-14">
           <span className="text-xs tracking-[0.35em] uppercase text-amber-400">Gallery</span>
