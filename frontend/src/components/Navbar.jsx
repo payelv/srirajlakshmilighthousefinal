@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Lightbulb, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useContent } from '../context/ContentContext';
 
@@ -14,19 +14,30 @@ const LINKS = [
 
 export default function Navbar() {
   const { content } = useContent();
+
   const [open, setOpen] = useState(false);
   const [isDarkBackground, setIsDarkBackground] = useState(true);
+  const [isPastHero, setIsPastHero] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    const sections = Array.from(
-      document.querySelectorAll('section')
-    );
+    const updateNavbar = () => {
+      const hero = document.querySelector('#home');
 
-    const updateNavbarColor = () => {
-      const navbarPointY = 80;
+      if (!hero) return;
+
+      const heroBottom = hero.getBoundingClientRect().bottom;
+
+      // Glass effect starts after the hero
+      setIsPastHero(heroBottom <= 80);
+
+      const navbarY = 70;
+
+      const sections = Array.from(
+        document.querySelectorAll('section')
+      );
 
       let activeSection = null;
 
@@ -34,8 +45,8 @@ export default function Navbar() {
         const rect = section.getBoundingClientRect();
 
         if (
-          rect.top <= navbarPointY &&
-          rect.bottom >= navbarPointY
+          rect.top <= navbarY &&
+          rect.bottom > navbarY
         ) {
           activeSection = section;
           break;
@@ -77,28 +88,28 @@ export default function Navbar() {
       }
     };
 
-    updateNavbarColor();
+    updateNavbar();
 
     window.addEventListener(
       'scroll',
-      updateNavbarColor,
+      updateNavbar,
       { passive: true }
     );
 
     window.addEventListener(
       'resize',
-      updateNavbarColor
+      updateNavbar
     );
 
     return () => {
       window.removeEventListener(
         'scroll',
-        updateNavbarColor
+        updateNavbar
       );
 
       window.removeEventListener(
         'resize',
-        updateNavbarColor
+        updateNavbar
       );
     };
   }, []);
@@ -147,16 +158,23 @@ export default function Navbar() {
 
   return (
     <header
-      className="
+      className={`
         fixed
         top-0
         left-0
         right-0
         z-50
-        bg-transparent
-        transition-colors
+        transition-all
         duration-500
-      "
+
+        ${
+          isPastHero
+            ? isDarkBackground
+              ? 'bg-black/35 backdrop-blur-xl border-b border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.15)]'
+              : 'bg-white/35 backdrop-blur-xl border-b border-black/10 shadow-[0_8px_30px_rgba(0,0,0,0.08)]'
+            : 'bg-transparent border-b border-transparent'
+        }
+      `}
     >
       <nav
         className="
@@ -168,104 +186,84 @@ export default function Navbar() {
           lg:h-28
           flex
           items-center
-          justify-between
+          relative
         "
       >
 
-        {/* LOGO */}
+        {/* BUSINESS NAME */}
         <button
           onClick={() => scrollTo('#home')}
           className={`
-            flex
-            items-center
-            gap-4
+            absolute
+            left-6
+            lg:left-10
+            text-left
             ${textColor}
             transition-colors
             duration-500
+            leading-tight
           `}
         >
           <span
             className="
-              w-16
-              h-16
-              lg:w-20
-              lg:h-20
-              rounded-full
-              flex
-              items-center
-              justify-center
-              shrink-0
+              block
+              font-serif
+              text-2xl
+              lg:text-3xl
+              whitespace-nowrap
             "
           >
-            <Lightbulb
-              className={`
-                w-8
-                h-8
-                lg:w-10
-                lg:h-10
-                ${textColor}
-                transition-colors
-                duration-500
-              `}
-            />
+            {content.business.name}
           </span>
 
-          <span className="leading-tight text-left">
-            <span
-              className={`
-                block
-                font-serif
-                text-3xl
-                lg:text-4xl
-                ${textColor}
-                transition-colors
-                duration-500
-              `}
-            >
-              {content.business.name}
-            </span>
-
-            <span
-              className={`
-                block
-                text-xs
-                lg:text-sm
-                tracking-[0.35em]
-                ${textColor}
-                opacity-70
-                transition-colors
-                duration-500
-              `}
-            >
-              {content.business.tagline}
-            </span>
+          <span
+            className="
+              block
+              text-[9px]
+              lg:text-[10px]
+              tracking-[0.35em]
+              opacity-70
+              mt-1
+              whitespace-nowrap
+            "
+          >
+            {content.business.tagline}
           </span>
         </button>
 
         {/* DESKTOP NAVIGATION */}
-        <div className="hidden lg:flex items-center gap-10">
-          {LINKS.map((l) => (
+        <div
+          className="
+            hidden
+            lg:flex
+            items-center
+            justify-center
+            gap-10
+            mx-auto
+          "
+        >
+          {LINKS.map((link) => (
             <button
-              key={l.href}
-              onClick={() => scrollTo(l.href)}
+              key={link.href}
+              onClick={() => scrollTo(link.href)}
               className={`
+                relative
                 text-base
                 font-medium
                 ${textColor}
                 transition-all
                 duration-500
-                relative
                 group
               `}
             >
-              {l.label}
+              {link.label}
 
               <span
                 className={`
                   absolute
-                  -bottom-1
                   left-0
                   right-0
+                  -bottom-1
                   h-px
                   ${underlineColor}
                   scale-x-0
@@ -279,15 +277,19 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* RIGHT SIDE */}
-        <div className="flex items-center gap-3">
-
-          {/* SHOWROOM BUTTON */}
+        {/* VISIT SHOWROOM */}
+        <div
+          className="
+            hidden
+            sm:block
+            absolute
+            right-6
+            lg:right-10
+          "
+        >
           <Button
             onClick={() => scrollTo('#contact')}
             className={`
-              hidden
-              sm:inline-flex
               h-12
               lg:h-14
               text-base
@@ -302,56 +304,64 @@ export default function Navbar() {
           >
             Visit Showroom
           </Button>
-
-          {/* MOBILE MENU */}
-          <button
-            onClick={() => setOpen((o) => !o)}
-            className={`
-              lg:hidden
-              w-12
-              h-12
-              rounded-full
-              flex
-              items-center
-              justify-center
-              ${textColor}
-              transition-colors
-              duration-500
-            `}
-            aria-label="menu"
-          >
-            {open ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
-          </button>
-
         </div>
+
+        {/* MOBILE MENU */}
+        <button
+          onClick={() => setOpen((value) => !value)}
+          className={`
+            lg:hidden
+            absolute
+            right-6
+            w-12
+            h-12
+            flex
+            items-center
+            justify-center
+            ${textColor}
+            transition-colors
+            duration-500
+          `}
+          aria-label="menu"
+        >
+          {open ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <Menu className="w-6 h-6" />
+          )}
+        </button>
       </nav>
 
       {/* MOBILE MENU */}
       {open && (
-        <div className="lg:hidden bg-transparent">
-          <div className="px-6 py-6 flex flex-col gap-4">
-
-            {LINKS.map((l) => (
+        <div
+          className={`
+            lg:hidden
+            ${
+              isPastHero
+                ? isDarkBackground
+                  ? 'bg-black/40 backdrop-blur-xl'
+                  : 'bg-white/40 backdrop-blur-xl'
+                : 'bg-transparent'
+            }
+          `}
+        >
+          <div className="px-6 py-5 flex flex-col items-end gap-4">
+            {LINKS.map((link) => (
               <button
-                key={l.href}
-                onClick={() => scrollTo(l.href)}
+                key={link.href}
+                onClick={() => scrollTo(link.href)}
                 className={`
-                  text-left
                   text-lg
+                  font-medium
                   ${textColor}
-                  py-3
                   transition-colors
                   duration-500
                 `}
               >
-                {l.label}
+                {link.label}
               </button>
             ))}
-
           </div>
         </div>
       )}
