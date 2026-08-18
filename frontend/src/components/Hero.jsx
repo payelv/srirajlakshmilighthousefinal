@@ -14,11 +14,6 @@ export default function Hero() {
   const textRef = useRef(null);
   const hintRef = useRef(null);
 
-  // Scroll-driven "walk into the shop" zoom: as the hero scrolls past, the
-  // photo slowly zooms in (subtle, capped at 1.35x so it never turns soft)
-  // while the dark overlay + text fade out, handing off to the rest of the
-  // page. Kept intentionally restrained per earlier feedback (too much zoom
-  // looked blurry/artificial).
   useEffect(() => {
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
@@ -56,9 +51,6 @@ export default function Hero() {
     <section id="home" className="relative bg-background">
       <div ref={pinRef} className="relative" style={{ height: '220vh' }}>
         <div className="sticky top-0 h-screen overflow-hidden">
-          {/* Photo — the source image already has AI-mirrored, blurred side
-              padding baked in, so bg-cover never crops the real storefront,
-              even on ultra-wide monitors. */}
           <div
             ref={imgWrapRef}
             className="absolute -inset-[2%] w-[104%] h-[104%] will-change-transform"
@@ -70,7 +62,6 @@ export default function Hero() {
             />
           </div>
 
-          {/* Darkening gradient behind the text side for legibility */}
           <div
             ref={overlayRef}
             className="absolute inset-0"
