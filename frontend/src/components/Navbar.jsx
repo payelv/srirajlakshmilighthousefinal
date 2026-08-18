@@ -41,31 +41,31 @@ export default function Navbar() {
 
   return (
     <header
-      className={`light fixed top-0 left-0 right-0 z-50 backdrop-blur-xl transition-all duration-500 text-foreground ${
+      className={`light fixed top-0 left-0 right-0 z-50 backdrop-blur-2xl transition-all duration-500 text-foreground ${
         scrolled
-          ? 'bg-background/90 border-b border-border/60'
-          : 'bg-background/70'
+          ? 'bg-white/60 border-b border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.08)]'
+          : 'bg-white/30 border-b border-white/20'
       }`}
     >
-      <nav className="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
-        <button onClick={() => scrollTo('#home')} className="flex items-center gap-3 group">
-          <span className="w-[52px] h-[52px] rounded-full border border-amber-500/40 flex items-center justify-center bg-amber-500/5 group-hover:bg-amber-500/15 transition-colors">
-            <Lightbulb className="w-7 h-7 text-amber-400" />
+      <nav className="max-w-7xl mx-auto px-6 lg:px-10 h-24 lg:h-28 flex items-center justify-between">
+        <button onClick={() => scrollTo('#home')} className="flex items-center gap-4 group">
+          <span className="w-16 h-16 lg:w-20 lg:h-20 rounded-full border border-amber-500/40 flex items-center justify-center bg-amber-500/5 group-hover:bg-amber-500/15 transition-colors shrink-0">
+            <Lightbulb className="w-8 h-8 lg:w-10 lg:h-10 text-amber-400" />
           </span>
           <span className="leading-tight text-left">
-            <span className="block font-serif text-2xl text-foreground">{content.business.name}</span>
-            <span className="block text-xs tracking-[0.3em] text-foreground/70">
+            <span className="block font-serif text-3xl lg:text-4xl text-foreground">{content.business.name}</span>
+            <span className="block text-xs lg:text-sm tracking-[0.35em] text-foreground/70">
               {content.business.tagline}
             </span>
           </span>
         </button>
 
-        <div className="hidden lg:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-10">
           {LINKS.map((l) => (
             <button
               key={l.href}
               onClick={() => scrollTo(l.href)}
-              className="text-sm font-medium text-foreground hover:text-amber-400 transition-colors relative group"
+              className="text-base font-medium text-foreground hover:text-amber-400 transition-colors relative group"
             >
               {l.label}
               <span className="absolute -bottom-1 left-0 right-0 h-px bg-amber-400 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
@@ -76,28 +76,28 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <Button
             onClick={() => scrollTo('#contact')}
-            className="hidden sm:inline-flex bg-amber-500 hover:bg-amber-400 text-black font-medium rounded-full px-5"
+            className="hidden sm:inline-flex h-12 lg:h-14 text-base bg-amber-500 hover:bg-amber-400 text-black font-medium rounded-full px-7"
           >
             Visit Showroom
           </Button>
           <button
             onClick={() => setOpen((o) => !o)}
-            className="lg:hidden w-10 h-10 rounded-full border border-border flex items-center justify-center"
+            className="lg:hidden w-12 h-12 rounded-full border border-border flex items-center justify-center"
             aria-label="menu"
           >
-            {open ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </nav>
 
       {open && (
-        <div className="lg:hidden bg-background/95 backdrop-blur-xl border-t border-border">
+        <div className="lg:hidden bg-white/70 backdrop-blur-2xl border-t border-white/40">
           <div className="px-6 py-6 flex flex-col gap-4">
             {LINKS.map((l) => (
               <button
                 key={l.href}
                 onClick={() => scrollTo(l.href)}
-                className="text-left text-foreground/90 py-2 border-b border-border/50"
+                className="text-left text-lg text-foreground/90 py-2 border-b border-border/50"
               >
                 {l.label}
               </button>
