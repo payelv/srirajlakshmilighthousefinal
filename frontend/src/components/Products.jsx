@@ -64,8 +64,8 @@ export default function Products() {
 function CategoryCircle({ label, image, to }) {
   return (
     <Link to={to} className="flex-shrink-0 w-[132px] text-center group">
-      <div className="w-[110px] h-[110px] mx-auto rounded-full p-[3px] border-2 border-amber-500/60 bg-background group-hover:border-amber-400 group-hover:-translate-y-1 group-hover:shadow-[0_10px_22px_-8px_rgba(224,161,60,0.45)] transition-all duration-200">
-        <img src={image} alt={label} className="w-full h-full object-cover rounded-full" />
+      <div className="w-[128px] h-[128px] mx-auto rounded-[22px] p-[3px] border-2 border-amber-500/60 bg-background group-hover:border-amber-400 group-hover:-translate-y-1 group-hover:shadow-[0_10px_22px_-8px_rgba(224,161,60,0.45)] transition-all duration-200">
+        <img src={image} alt={label} className="w-full h-full object-cover rounded-[18px]" />
       </div>
       <div className="mt-3 text-sm font-semibold tracking-wide uppercase text-foreground group-hover:text-amber-400">
         {label}
