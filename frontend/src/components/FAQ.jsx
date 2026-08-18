@@ -11,7 +11,7 @@ import { useContent } from '../context/ContentContext';
 export default function FAQ() {
   const { content } = useContent();
   return (
-    <section className="relative py-24 lg:py-32">
+    <section className="light bg-background text-foreground relative py-24 lg:py-32">
       <div className="max-w-4xl mx-auto px-6 lg:px-10">
         <div className="text-center mb-14">
           <span className="text-xs tracking-[0.35em] uppercase text-amber-400">FAQ</span>
