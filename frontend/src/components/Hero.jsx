@@ -62,7 +62,7 @@ export default function Hero() {
     >
       <div
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${heroStorefront})` }}
+        style={{ backgroundImage: `url(${hero.image || heroStorefront})` }}
       />
       <div
         className="absolute inset-0 pointer-events-none"
