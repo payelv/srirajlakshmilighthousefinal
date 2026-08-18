@@ -26,7 +26,8 @@ function readCache() {
 export function ContentProvider({ children }) {
   const [content, setContent] = useState(readCache);
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState(() => localStorage.getItem(THEME_KEY) || 'light');
+// Site is locked to the dark "premium" theme only — no light-mode toggle.
+    const [theme, setTheme] = useState('dark');
 
   useEffect(() => {
     document.documentElement.classList.remove('light', 'dark');
