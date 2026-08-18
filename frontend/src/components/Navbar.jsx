@@ -21,69 +21,85 @@ export default function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    const checkBackground = () => {
-      const navbarHeight = 100;
+    const sections = Array.from(
+      document.querySelectorAll('section')
+    );
 
-      // Find the element directly behind the navbar
-      const element = document.elementFromPoint(
-        window.innerWidth / 2,
-        navbarHeight / 2
-      );
+    const updateNavbarColor = () => {
+      const navbarPointY = 80;
 
-      if (!element) return;
+      let activeSection = null;
 
-      let current = element;
-
-      // Look for a section with a background
-      while (current && current !== document.body) {
-        const style = window.getComputedStyle(current);
-
-        const backgroundColor = style.backgroundColor;
-        const backgroundImage = style.backgroundImage;
+      for (const section of sections) {
+        const rect = section.getBoundingClientRect();
 
         if (
-          backgroundColor &&
-          backgroundColor !== 'rgba(0, 0, 0, 0)' &&
-          backgroundColor !== 'transparent'
+          rect.top <= navbarPointY &&
+          rect.bottom >= navbarPointY
         ) {
-          const rgb = backgroundColor.match(/\d+/g);
-
-          if (rgb && rgb.length >= 3) {
-            const [r, g, b] = rgb.map(Number);
-
-            // Calculate brightness
-            const brightness =
-              (r * 299 + g * 587 + b * 114) / 1000;
-
-            setIsDarkBackground(brightness < 150);
-            return;
-          }
+          activeSection = section;
+          break;
         }
-
-        // If the section has an image, assume dark for better visibility
-        if (
-          backgroundImage &&
-          backgroundImage !== 'none'
-        ) {
-          setIsDarkBackground(true);
-          return;
-        }
-
-        current = current.parentElement;
       }
 
-      // Default
-      setIsDarkBackground(true);
+      if (!activeSection) return;
+
+      const theme =
+        activeSection.getAttribute('data-nav-theme');
+
+      if (theme === 'dark') {
+        setIsDarkBackground(true);
+        return;
+      }
+
+      if (theme === 'light') {
+        setIsDarkBackground(false);
+        return;
+      }
+
+      const style =
+        window.getComputedStyle(activeSection);
+
+      const backgroundColor =
+        style.backgroundColor;
+
+      const rgb = backgroundColor.match(/\d+/g);
+
+      if (rgb && rgb.length >= 3) {
+        const r = Number(rgb[0]);
+        const g = Number(rgb[1]);
+        const b = Number(rgb[2]);
+
+        const brightness =
+          (r * 299 + g * 587 + b * 114) / 1000;
+
+        setIsDarkBackground(brightness < 150);
+      }
     };
 
-    checkBackground();
+    updateNavbarColor();
 
-    window.addEventListener('scroll', checkBackground);
-    window.addEventListener('resize', checkBackground);
+    window.addEventListener(
+      'scroll',
+      updateNavbarColor,
+      { passive: true }
+    );
+
+    window.addEventListener(
+      'resize',
+      updateNavbarColor
+    );
 
     return () => {
-      window.removeEventListener('scroll', checkBackground);
-      window.removeEventListener('resize', checkBackground);
+      window.removeEventListener(
+        'scroll',
+        updateNavbarColor
+      );
+
+      window.removeEventListener(
+        'resize',
+        updateNavbarColor
+      );
     };
   }, []);
 
@@ -121,17 +137,13 @@ export default function Navbar() {
     ? 'text-white'
     : 'text-black';
 
-  const hoverColor = isDarkBackground
-    ? 'hover:text-white/70'
-    : 'hover:text-black/60';
+  const buttonColor = isDarkBackground
+    ? 'bg-white text-black'
+    : 'bg-black text-white';
 
-  const borderColor = isDarkBackground
-    ? 'border-white/30'
-    : 'border-black/30';
-
-  const buttonClass = isDarkBackground
-    ? 'bg-white text-black hover:bg-white/90'
-    : 'bg-black text-white hover:bg-black/90';
+  const underlineColor = isDarkBackground
+    ? 'bg-white'
+    : 'bg-black';
 
   return (
     <header
@@ -143,7 +155,7 @@ export default function Navbar() {
         z-50
         bg-transparent
         transition-colors
-        duration-300
+        duration-500
       "
     >
       <nav
@@ -163,10 +175,17 @@ export default function Navbar() {
         {/* LOGO */}
         <button
           onClick={() => scrollTo('#home')}
-          className={`flex items-center gap-4 group ${textColor}`}
+          className={`
+            flex
+            items-center
+            gap-4
+            ${textColor}
+            transition-colors
+            duration-500
+          `}
         >
           <span
-            className={`
+            className="
               w-16
               h-16
               lg:w-20
@@ -176,11 +195,7 @@ export default function Navbar() {
               items-center
               justify-center
               shrink-0
-              border
-              ${borderColor}
-              transition-colors
-              duration-300
-            `}
+            "
           >
             <Lightbulb
               className={`
@@ -190,7 +205,7 @@ export default function Navbar() {
                 lg:h-10
                 ${textColor}
                 transition-colors
-                duration-300
+                duration-500
               `}
             />
           </span>
@@ -204,7 +219,7 @@ export default function Navbar() {
                 lg:text-4xl
                 ${textColor}
                 transition-colors
-                duration-300
+                duration-500
               `}
             >
               {content.business.name}
@@ -219,7 +234,7 @@ export default function Navbar() {
                 ${textColor}
                 opacity-70
                 transition-colors
-                duration-300
+                duration-500
               `}
             >
               {content.business.tagline}
@@ -237,9 +252,8 @@ export default function Navbar() {
                 text-base
                 font-medium
                 ${textColor}
-                ${hoverColor}
-                transition-colors
-                duration-300
+                transition-all
+                duration-500
                 relative
                 group
               `}
@@ -253,7 +267,7 @@ export default function Navbar() {
                   left-0
                   right-0
                   h-px
-                  ${isDarkBackground ? 'bg-white' : 'bg-black'}
+                  ${underlineColor}
                   scale-x-0
                   group-hover:scale-x-100
                   transition-transform
@@ -277,18 +291,19 @@ export default function Navbar() {
               h-12
               lg:h-14
               text-base
-              ${buttonClass}
+              ${buttonColor}
+              hover:opacity-80
               font-medium
               rounded-full
               px-7
-              transition-colors
-              duration-300
+              transition-all
+              duration-500
             `}
           >
             Visit Showroom
           </Button>
 
-          {/* MOBILE MENU BUTTON */}
+          {/* MOBILE MENU */}
           <button
             onClick={() => setOpen((o) => !o)}
             className={`
@@ -301,7 +316,7 @@ export default function Navbar() {
               justify-center
               ${textColor}
               transition-colors
-              duration-300
+              duration-500
             `}
             aria-label="menu"
           >
@@ -311,6 +326,7 @@ export default function Navbar() {
               <Menu className="w-5 h-5" />
             )}
           </button>
+
         </div>
       </nav>
 
@@ -329,7 +345,7 @@ export default function Navbar() {
                   ${textColor}
                   py-3
                   transition-colors
-                  duration-300
+                  duration-500
                 `}
               >
                 {l.label}
