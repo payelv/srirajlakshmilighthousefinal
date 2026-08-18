@@ -34,7 +34,7 @@ export default function Products() {
   }, [categories]);
 
   return (
-    <section id="collections" className="relative py-24 lg:py-32">
+    <section id="collections" className="light bg-background text-foreground relative py-24 lg:py-32">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <div className="text-center mb-14">
           <span className="text-xs tracking-[0.35em] uppercase text-amber-400">Collections</span>
@@ -47,10 +47,10 @@ export default function Products() {
         <div className="space-y-14">
           {groups.map(([sectionName, cats]) => (
             <div key={sectionName}>
-              <h3 className="text-center font-serif text-2xl lg:text-3xl mb-6">{sectionName}</h3>
-              <div className="rounded-2xl border border-border bg-card/40 p-6 flex flex-wrap gap-x-8 gap-y-10 justify-center">
+              <h3 className="font-sans text-lg font-bold tracking-wide mb-5">{sectionName}</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {cats.map((c) => (
-                  <CategoryCircle key={c.id} label={c.name} image={c.image} to={`/category/${c.id}`} />
+                  <CategoryCard key={c.id} label={c.name} image={c.image} to={`/category/${c.id}`} />
                 ))}
               </div>
             </div>
@@ -61,15 +61,22 @@ export default function Products() {
   );
 }
 
-function CategoryCircle({ label, image, to }) {
+function CategoryCard({ label, image, to }) {
   return (
-    <Link to={to} className="flex-shrink-0 w-[132px] text-center group">
-      <div className="w-[128px] h-[128px] mx-auto rounded-[22px] p-[3px] border-2 border-amber-500/60 bg-background group-hover:border-amber-400 group-hover:-translate-y-1 group-hover:shadow-[0_10px_22px_-8px_rgba(224,161,60,0.45)] transition-all duration-200">
-        <img src={image} alt={label} className="w-full h-full object-cover rounded-[18px]" />
+    <Link
+      to={to}
+      className="group rounded-2xl border border-border bg-card/40 backdrop-blur p-4 flex flex-col gap-4 card-hover"
+    >
+      <div className="aspect-[4/3] w-full rounded-xl overflow-hidden bg-secondary">
+        <img
+          src={image}
+          alt={label}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        />
       </div>
-      <div className="mt-3 text-sm font-semibold tracking-wide uppercase text-foreground group-hover:text-amber-400">
+      <span className="text-sm font-semibold tracking-wide group-hover:text-amber-400 transition-colors">
         {label}
-      </div>
+      </span>
     </Link>
   );
 }
