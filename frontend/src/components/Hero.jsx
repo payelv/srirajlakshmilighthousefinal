@@ -108,7 +108,8 @@ export default function Hero() {
             </div>
 
             
-              href={`tel:${business.phone}`}
+              <a
+                href={`tel:${business.phone}`}
               className="mt-6 inline-flex items-center gap-2 text-sm text-foreground/80 hover:text-amber-400 transition-colors w-fit"
             >
               <Phone className="w-4 h-4 text-amber-500" />
