@@ -3,6 +3,7 @@ import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ContentProvider } from './context/ContentContext';
 import { Toaster } from './components/ui/toaster';
+import ScrollToTop from './components/ScrollToTop';
 import Landing from './pages/Landing';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
@@ -14,6 +15,7 @@ function App() {
   return (
     <ContentProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/category/:catId" element={<CategoryPage />} />
