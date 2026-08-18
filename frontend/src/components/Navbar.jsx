@@ -41,10 +41,10 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl transition-all duration-500 ${
         scrolled
-          ? 'backdrop-blur-xl bg-background/70 border-b border-border/60'
-          : 'bg-transparent'
+          ? 'bg-background/70 border-b border-border/60'
+          : 'bg-background/35'
       }`}
     >
       <nav className="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
@@ -54,7 +54,7 @@ export default function Navbar() {
           </span>
           <span className="leading-tight text-left">
             <span className="block font-serif text-2xl text-foreground">{content.business.name}</span>
-            <span className="block text-xs tracking-[0.3em] text-muted-foreground">
+            <span className="block text-xs tracking-[0.3em] text-foreground/70">
               {content.business.tagline}
             </span>
           </span>
@@ -65,7 +65,7 @@ export default function Navbar() {
             <button
               key={l.href}
               onClick={() => scrollTo(l.href)}
-              className="text-sm text-foreground/80 hover:text-amber-400 transition-colors relative group"
+              className="text-sm font-medium text-foreground hover:text-amber-400 transition-colors relative group"
             >
               {l.label}
               <span className="absolute -bottom-1 left-0 right-0 h-px bg-amber-400 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
