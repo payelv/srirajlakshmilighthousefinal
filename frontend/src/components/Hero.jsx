@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Phone, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useContent } from '../context/ContentContext';
@@ -13,6 +13,23 @@ export default function Hero() {
   const overlayRef = useRef(null);
   const textRef = useRef(null);
   const hintRef = useRef(null);
+
+  // On narrow (mobile) viewports, the tight cover-crop centers near the
+  // CLARA sign's decorative circle. Shift the crop rightward toward the
+  // main "SRI RAJLAXMI LIGHT HOUSE" signage on those screens only.
+  const [isNarrow, setIsNarrow] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 640px)');
+    const update = () => setIsNarrow(mq.matches);
+    update();
+    if (mq.addEventListener) mq.addEventListener('change', update);
+    else mq.addListener(update);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener('change', update);
+      else mq.removeListener(update);
+    };
+  }, []);
 
   useEffect(() => {
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
@@ -57,8 +74,11 @@ export default function Hero() {
             style={{ transformOrigin: '48% 55%' }}
           >
             <div
-              className="absolute inset-0 w-full h-full bg-cover bg-center"
-              style={{ backgroundImage: `url(${heroStorefront})` }}
+              className="absolute inset-0 w-full h-full bg-cover"
+              style={{
+                backgroundImage: `url(${heroStorefront})`,
+                backgroundPosition: isNarrow ? '59% center' : 'center center',
+              }}
             />
           </div>
 
@@ -107,9 +127,8 @@ export default function Hero() {
               </Button>
             </div>
 
-            
-              <a
-                href={`tel:${business.phone}`}
+            <a
+              href={`tel:${business.phone}`}
               className="mt-6 inline-flex items-center gap-2 text-sm text-foreground/80 hover:text-amber-400 transition-colors w-fit"
             >
               <Phone className="w-4 h-4 text-amber-500" />
