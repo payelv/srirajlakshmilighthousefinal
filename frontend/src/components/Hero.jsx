@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { ArrowRight, Phone, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useContent } from '../context/ContentContext';
-import heroStorefront from '../assets/hero-storefront.jpg';
+import heroStorefront from './hero-storefront.jpg';
 
 export default function Hero() {
   const { content } = useContent();
@@ -116,7 +116,7 @@ export default function Hero() {
               </Button>
             </div>
 
-            <a
+            
               href={`tel:${business.phone}`}
               className="mt-6 inline-flex items-center gap-2 text-sm text-foreground/80 hover:text-amber-400 transition-colors w-fit"
             >
