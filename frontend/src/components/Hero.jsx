@@ -1,8 +1,50 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Phone } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useContent } from '../context/ContentContext';
 import heroStorefront from './hero-storefront.jpg';
+
+function useInView(ref) {
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    if (!ref.current) return;
+    const obs = new IntersectionObserver(
+      ([e]) => e.isIntersecting && setInView(true),
+      { threshold: 0.2 }
+    );
+    obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [ref]);
+  return inView;
+}
+
+function Counter({ value, suffix }) {
+  const ref = useRef(null);
+  const inView = useInView(ref);
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    const duration = 1600;
+    const start = performance.now();
+    let raf;
+    const step = (t) => {
+      const p = Math.min((t - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setDisplay(Math.floor(eased * value));
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, value]);
+
+  return (
+    <b ref={ref} className="block font-serif text-3xl text-amber-400">
+      {display.toLocaleString('en-IN')}
+      {suffix}
+    </b>
+  );
+}
 
 export default function Hero() {
   const { content } = useContent();
@@ -74,10 +116,7 @@ export default function Hero() {
         <div className="relative mt-20 grid grid-cols-2 lg:grid-cols-4 border-t border-white/15 pt-9 text-center">
           {about.stats.map((s) => (
             <div key={s.label}>
-              <b className="block font-serif text-3xl text-amber-400">
-                {s.value.toLocaleString('en-IN')}
-                {s.suffix}
-              </b>
+              <Counter value={s.value} suffix={s.suffix} />
               <span className="text-sm text-foreground/55 tracking-wide">{s.label}</span>
             </div>
           ))}
