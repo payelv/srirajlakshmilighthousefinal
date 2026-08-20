@@ -34,8 +34,9 @@ export default function Products() {
   }, [categories]);
 
   return (
-    <section id="collections" className="light bg-background text-foreground relative py-24 lg:py-32">
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
+    <section id="collections" className="bg-background text-foreground relative py-24 lg:py-32 overflow-hidden">
+      <div className="absolute inset-0 radial-glow pointer-events-none" />
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 relative">
         <div className="text-center mb-14">
           <span className="text-xs tracking-[0.35em] uppercase text-amber-400">Collections</span>
           <h2 className="mt-4 font-serif text-4xl lg:text-6xl">
@@ -47,7 +48,10 @@ export default function Products() {
         <div className="space-y-14">
           {groups.map(([sectionName, cats]) => (
             <div key={sectionName}>
-              <h3 className="font-sans text-lg font-bold tracking-wide mb-5">{sectionName}</h3>
+              <h3 className="flex items-center gap-3 font-sans text-lg font-bold tracking-wide mb-5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                {sectionName}
+              </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {cats.map((c) => (
                   <CategoryCard key={c.id} label={c.name} image={c.image} to={`/category/${c.id}`} />
@@ -65,9 +69,9 @@ function CategoryCard({ label, image, to }) {
   return (
     <Link
       to={to}
-      className="group rounded-2xl border border-border bg-card/40 backdrop-blur p-4 flex flex-col gap-4 card-hover"
+      className="group rounded-2xl border border-amber-500/20 hover:border-amber-400/60 bg-card/60 backdrop-blur p-4 flex flex-col gap-4 card-hover transition-colors"
     >
-      <div className="aspect-[4/3] w-full rounded-xl overflow-hidden bg-secondary">
+      <div className="aspect-[4/3] w-full rounded-xl overflow-hidden bg-secondary ring-1 ring-amber-500/10">
         <img
           src={image}
           alt={label}
