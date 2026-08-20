@@ -3,7 +3,6 @@ import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import About from '../components/About';
 import Products from '../components/Products';
-import WhyChooseUs from '../components/WhyChooseUs';
 import Testimonials from '../components/Testimonials';
 import Gallery from '../components/Gallery';
 import FAQ from '../components/FAQ';
@@ -19,7 +18,6 @@ export default function Landing() {
         <Hero />
         <About />
         <Products />
-        <WhyChooseUs />
         <Testimonials />
         <Gallery />
         <FAQ />
