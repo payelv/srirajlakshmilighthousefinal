@@ -74,13 +74,14 @@ export default function Hero() {
 
       {/* CONTENT */}
       <div className="relative max-w-7xl mx-auto px-6 lg:px-10">
-
         <div className="max-w-3xl mx-auto text-center">
-
+          
+          {/* EYEBROW */}
           <span className="text-xs tracking-[0.35em] uppercase text-amber-400 font-semibold">
             {hero.eyebrow}
           </span>
 
+          {/* TITLE */}
           <h1
             className="
               mt-6
@@ -99,6 +100,7 @@ export default function Hero() {
             </span>
           </h1>
 
+          {/* SUBTITLE */}
           <p
             className="
               mt-6
@@ -113,6 +115,7 @@ export default function Hero() {
             {hero.subtitle}
           </p>
 
+          {/* BUTTONS */}
           <div
             className="
               mt-9
@@ -123,6 +126,7 @@ export default function Hero() {
               gap-4
             "
           >
+            {/* PRIMARY BUTTON */}
             <Button
               onClick={() => scrollTo('#collections')}
               className="
@@ -150,6 +154,7 @@ export default function Hero() {
               />
             </Button>
 
+            {/* SECONDARY BUTTON */}
             <Button
               onClick={() => scrollTo('#contact')}
               variant="outline"
@@ -170,7 +175,8 @@ export default function Hero() {
             </Button>
           </div>
 
-          
+          {/* PHONE LINK */}
+          <a
             href={`tel:${business.phone}`}
             className="
               mt-6
@@ -190,7 +196,6 @@ export default function Hero() {
 
             {hero.ctaTertiary}
           </a>
-
         </div>
 
         {/* STATS */}
@@ -220,7 +225,6 @@ export default function Hero() {
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );
